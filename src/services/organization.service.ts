@@ -37,14 +37,15 @@ export class OrganizationService {
     });
   }
 
-  public createOrganization(organization:IOrganizationRaw):Promise<IOrganizationExact> {
-    return new Promise<IOrganizationExact>((resolve, reject) => {
+  public createOrganization(organization:IOrganizationRaw):Promise<IOrganization> {
+    return new Promise<IOrganization>((resolve, reject) => {
       database.models.organization.create<Model<IOrganizationRaw>>({
         name: organization.name,
         tarrif: organization.tarrif,
       }).then((organization) => {
         if (organization) {
-          resolve(organization.toJSON() as IOrganizationExact);
+          const rawOrganization:IOrganizationExact = organization.toJSON() as IOrganizationExact
+          resolve(Object.assign(rawOrganization, { restaurants: [] }));
         } else { 
           reject('Organization was not created')
         }

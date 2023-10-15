@@ -68,8 +68,8 @@ export class UserService {
     }
   }
 
-  public createUser(user:IUserRaw):Promise<IUserExact> {
-    return new Promise<IUserExact>((resolve, reject) => {
+  public createUser(user:IUserRaw):Promise<IUser> {
+    return new Promise<IUser>((resolve, reject) => {
       database.models.user.create<Model<IUserRaw>>({
         email: user.email,
         password: bcrypt.hashSync(user.password, 7),
@@ -78,7 +78,8 @@ export class UserService {
         role: user.role,
       }).then((user) => {
         if (user) {
-          resolve(user.toJSON() as IUserExact);
+          const rawUser:IUserExact = user.toJSON() as IUserExact;
+          resolve(Object.assign(rawUser, { restaurants: [], profiles: [] }));
         } else {
           reject('User was not created')
         }

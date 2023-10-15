@@ -30,13 +30,14 @@ export class RestaurantService {
     });
   }
 
-  public createRestaurant(restaurant:IRestaurantRaw):Promise<IRestaurantExact> {
-    return new Promise<IRestaurantExact>((resolve, reject) => {
+  public createRestaurant(restaurant:IRestaurantRaw):Promise<IRestaurant> {
+    return new Promise<IRestaurant>((resolve, reject) => {
       database.models.restaurant.create<Model<IRestaurantRaw>>({
         name: restaurant.name
       }).then((restaurant) => {
         if (restaurant) {
-          resolve(restaurant.toJSON() as IRestaurantExact);
+          const rawRestaurant:IRestaurantExact = restaurant.toJSON() as IRestaurantExact;
+          resolve(Object.assign(rawRestaurant, { rooms: [], clients: [] }) as IRestaurant);
         } else { 
           reject('Restaurant was not created')
         }
