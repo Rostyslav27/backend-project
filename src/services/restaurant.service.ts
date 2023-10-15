@@ -1,5 +1,5 @@
 
-import database, { RestaurantRoom, RoomTable, TableReservation, RestaurantOrganization, ReservationClient, RestaurantClient } from './../database';
+import database, { RestaurantRoom, RoomTable, TableReservation, RestaurantOrganization, ReservationClient, RestaurantClient, Room, Table } from './../database';
 import { Model } from 'sequelize';
 import { type IRestaurant, type IRestaurantRaw, type IRestaurantExact } from './../types';
 require('dotenv').config();
@@ -21,6 +21,35 @@ export class RestaurantService {
       } : {} ).then((restaurant) => {
         if (restaurant) {
           resolve(restaurant.toJSON());
+        } else {
+          reject('No restaurant')
+        }
+      }).catch(err => {
+        reject(err);
+      })
+    });
+  }
+
+  public getRestaurantByTableId(id:number):Promise<IRestaurant> {
+    return new Promise<IRestaurant>((resolve, reject) => {
+      database.models.restaurant.findAll<Model<IRestaurant>>({
+        where: {
+          '$rooms.tables.id$' : id
+        },
+        include: [{ 
+          model: Room,
+          as: 'rooms',
+          required: true,
+          include: [{
+            model: Table,
+            as: 'tables',
+            where: { id },
+            required: true,
+          }]
+        }]
+      }).then((restaurants) => {
+        if (restaurants.length) {
+          resolve(restaurants[0].toJSON());
         } else {
           reject('No restaurant')
         }
