@@ -6,7 +6,7 @@ require('dotenv').config();
 
 const jwtKey:string = process.env.JWT_KEY || 'rvdfnobufig5';
 
-export default class User {
+export class User {
   private _user: IUser;
 
   constructor(user:IUser) {

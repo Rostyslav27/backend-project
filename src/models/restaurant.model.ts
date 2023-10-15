@@ -1,7 +1,7 @@
 import { type IRestaurant, type IReservation } from './../types';
 require('dotenv').config();
 
-export default class Restaurant {
+export class Restaurant {
   private _restaurant: IRestaurant;
 
   constructor(restaurant:IRestaurant) {

@@ -1,8 +1,8 @@
-import { IOrganizationRaw, type IOrganization } from './../types';
+import { type IOrganizationRaw, type IOrganization } from './../types';
 import { organizationService } from './../services/organization.service';
 require('dotenv').config();
 
-export default class Organization {
+export class Organization {
   private _organization: IOrganization;
 
   constructor(organization:IOrganization) {
