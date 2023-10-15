@@ -102,6 +102,8 @@ export interface ITableRaw extends Omit<ITable, 'id'> {
   roomId?:number,
 }
 
+export interface ITableExact extends Omit<ITable, 'reservations'> {}
+
 export interface IReservation {
   id: number
   table: ITable,
