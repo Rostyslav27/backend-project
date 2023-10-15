@@ -53,6 +53,8 @@ export interface IOrganizationRaw extends Omit<IOrganization, 'id' | 'owner' | '
   restaurants?: IRestaurantRaw[],
 }
 
+export interface IOrganizationExact extends Omit<IOrganization, 'owner' | 'restaurants'> {}
+
 export interface IRestaurant {
   id: number
   name?: string,

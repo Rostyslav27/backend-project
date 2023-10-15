@@ -1,7 +1,7 @@
 
 import database, { OrganizationOwner, OrganizationRestaurants } from './../database';
 import { Model } from 'sequelize';
-import { type IOrganization, type IOrganizationRaw } from './../types';
+import { type IOrganization, type IOrganizationRaw, type IOrganizationExact } from './../types';
 require('dotenv').config();
 
 export class OrganizationService {
@@ -37,14 +37,14 @@ export class OrganizationService {
     });
   }
 
-  public createOrganization(organization:IOrganizationRaw):Promise<void> {
-    return new Promise<void>((resolve, reject) => {
+  public createOrganization(organization:IOrganizationRaw):Promise<IOrganizationExact> {
+    return new Promise<IOrganizationExact>((resolve, reject) => {
       database.models.organization.create<Model<IOrganizationRaw>>({
         name: organization.name,
         tarrif: organization.tarrif,
       }).then((organization) => {
         if (organization) {
-          resolve();
+          resolve(organization.toJSON() as IOrganizationExact);
         } else { 
           reject('Organization was not created')
         }
