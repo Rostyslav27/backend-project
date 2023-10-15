@@ -8,7 +8,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { userService } from './../services/user.service';
 import { Role } from './../types';
-import { User } from 'models/user.model';
+import { User } from './../models/user.model';
 
 const jwtKey:string = process.env.JWT_KEY || 'rvdfnobufig5';
 
