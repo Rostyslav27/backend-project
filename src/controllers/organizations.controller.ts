@@ -1,19 +1,18 @@
 
 require('dotenv').config(); 
 import { type Request, type Response } from 'express';
-import Organization from './../models/organization.model';
-import User from './../models/user.model';
-import Restaurant from './../models/restaurant.model';
+import { Organization } from './../models/organization.model';
+import { User } from './../models/user.model';
+import { Restaurant } from './../models/restaurant.model';
 import { organizationService } from './../services/organization.service';
 import { userService } from './../services/user.service';
 import { restaurantService } from './../services/restaurant.service';
-import { clientService } from './../services/client.service';
 import { Role, Errors, RestaurantRole } from './../types';
 
 class OrganizationsController {
   public async getOrganizations(req:Request, res:Response) {
     organizationService.getOrganizations().then((organizations) => {
-      res.json(organizations.map(organization => organization.getInfo()));
+      res.json(organizations);
     }).catch(err => {
       console.error(err);
       res.status(403).json(Errors.Exist);
@@ -33,7 +32,7 @@ class OrganizationsController {
         name: String(req.body.userName || ''),
         surname: String(req.body.userSurname || ''),
       }).then((fullUser) => {
-        user = fullUser;
+        user = new User(fullUser);
       }),
       restaurantService.createRestaurant({
         name: String(req.body.restaurantName || ''),
@@ -42,19 +41,19 @@ class OrganizationsController {
         city: String(req.body.restaurantCity || ''),
         address: String(req.body.restaurantAddress || '')
       }).then((fullRestaurant) => {
-        restaurant = fullRestaurant;
+        restaurant = new Restaurant(fullRestaurant);
       }),
       organizationService.createOrganization({
         name: String(req.body.organizationName || ''),
         tarrif: +(req.body.tarrif || 0),
       }).then((fullOrganization) => {
-        organization = fullOrganization;
+        organization = new Organization(fullOrganization);
       })
     ]).then(() => {
       Promise.all([
-        restaurant.addUser(user.getId(), RestaurantRole.Owner),
         organization.setOwner(user.getId()),
-        organization.addRestaurant(restaurant.getId())
+        restaurant.setOrganization(restaurant.getId()),
+        restaurant.addUser(user.getId(), RestaurantRole.Owner),
       ]).then(() => {
         res.json('success');
       }).catch(err => {
@@ -72,29 +71,18 @@ class OrganizationsController {
     const blocked:boolean = !!req.body.blocked;
     const organizationName:string = String(req.body.organizationName || '');
 
-    organizationService.getOrganizationById(organizationId).then((organization) => {
-      const organizationData = organization.getInfo();
+    organizationService.getOrganizationById(organizationId).then((organizationInfo) => {
+      const organization = new Organization(organizationInfo);
 
       organization.edit({
-        name: organizationName || organizationData.name,
-        tarrif: tarrif || organizationData.tarrif,
+        name: organizationName || organizationInfo.name,
+        tarrif: tarrif || organizationInfo.tarrif,
         blocked,
       }).then(() => {
         res.json('success');
       }).catch(err => {
         res.status(500).json(Errors.Unknown);
       });
-    }).catch(err => {
-      console.error(err);
-      res.status(403).json(Errors.Exist);
-    });
-  }
-
-  public async getClients(req:Request, res:Response) {
-    const organizationId:number = +req.params.id;
-
-    clientService.getClients(organizationId).then((clients) => {
-      res.json(clients);
     }).catch(err => {
       console.error(err);
       res.status(403).json(Errors.Exist);
