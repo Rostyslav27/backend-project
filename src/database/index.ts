@@ -102,8 +102,8 @@ const RoomTable =  Room.hasMany(Table, { as: 'tables' });
 const ClientTagClient = ClientTag.belongsToMany(Client, { through: TagClientModel });
 const ClientClientTag = Client.belongsToMany(ClientTag, { through: TagClientModel });
 
-Client.belongsTo(Restaurant, { as: 'restaurant' });
-Restaurant.hasMany(Client, { as: 'clients' });
+const ClientRestaurant = Client.belongsTo(Restaurant, { as: 'restaurant' });
+const RestaurantClient = Restaurant.hasMany(Client, { as: 'clients' });
 
 const ReservationClient = Reservation.belongsTo(Client, { as: 'client' });
 const ClientReservation = Client.hasMany(Reservation, { as: 'reservations' });
@@ -133,7 +133,9 @@ export {
   ClientClientTag,
   TableReservation,
   ClientReservation,
-  ReservationClient
+  ReservationClient,
+  RestaurantClient,
+  ClientRestaurant
 }
 
 export default sequelize;

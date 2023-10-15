@@ -1,5 +1,5 @@
 
-import database, { RestaurantRoom, RoomTable, TableReservation, RestaurantOrganization, ReservationClient } from './../database';
+import database, { RestaurantRoom, RoomTable, TableReservation, RestaurantOrganization, ReservationClient, RestaurantClient } from './../database';
 import { Model } from 'sequelize';
 import { type IRestaurant, type IRestaurantRaw, type IRestaurantExact } from './../types';
 require('dotenv').config();
@@ -17,7 +17,7 @@ export class RestaurantService {
               include: [ReservationClient]
             }]
           }]
-        }, RestaurantOrganization]
+        }, RestaurantOrganization, RestaurantClient]
       } : {} ).then((restaurant) => {
         if (restaurant) {
           resolve(restaurant.toJSON());
