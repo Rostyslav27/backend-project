@@ -7,9 +7,21 @@ require('dotenv').config();
 export class OrganizationService {
   public getOrganizationById(id:number):Promise<IOrganization> {
     return new Promise<IOrganization>((resolve, reject) => {
-      database.models.organization.findByPk<Model<IOrganization>>(id).then((organization) => {
+      database.models.organization.findByPk<Model<IOrganization>>(id, {
+        include: [
+          {
+            association: OrganizationOwner,
+            required: true,
+          },
+          OrganizationRestaurants
+        ]
+      }).then((organization) => {
         if (organization) {
-          resolve(organization.toJSON());
+          const _organization:IOrganization = organization.toJSON();
+          if (_organization.owner) {
+            _organization.owner.password = '*';
+          }
+          resolve(_organization);
         } else {
           reject('No organization')
         }
@@ -30,7 +42,9 @@ export class OrganizationService {
           OrganizationRestaurants
         ]
       }).then((organizations) => {
-        resolve(organizations.map(organization => organization.toJSON()).filter(organization => organization.owner));
+        const _organizations = organizations.map(organization => organization.toJSON()).filter(organization => organization.owner);
+        _organizations.forEach(organization => organization.owner ? organization.owner.password = '*' : void(0));
+        resolve(_organizations);
       }).catch(err => {
         reject(err);
       })

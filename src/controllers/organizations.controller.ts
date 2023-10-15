@@ -55,7 +55,11 @@ class OrganizationsController {
         restaurant.setOrganization(restaurant.getId()),
         restaurant.addUser(user.getId(), RestaurantRole.Owner),
       ]).then(() => {
-        res.json('success');
+        organizationService.getOrganizationById(organization.getId()).then(organization => {
+          res.json(organization);
+        }).catch(err => {
+          res.status(500).json(Errors.Unknown);
+        })
       }).catch(err => {
         res.status(500).json(Errors.Unknown);
       });
