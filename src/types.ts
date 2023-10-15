@@ -106,7 +106,7 @@ export interface ITableExact extends Omit<ITable, 'reservations'> {}
 
 export interface IReservation {
   id: number
-  table: ITable,
+  tableId?: number,
   clientId?: number,
   startTime: string,
   endTime: string,
@@ -114,10 +114,8 @@ export interface IReservation {
   people?: number,
 }
 
-export interface IReservationRaw extends Omit<IReservation, 'id' | 'table' | 'client'> {
+export interface IReservationRaw extends Omit<IReservation, 'id'> {
   id?: number,
-  table?: ITable,
-  tableId?: number,
 }
 
 export interface IClient {
@@ -137,6 +135,8 @@ export interface IClientRaw extends Omit<IClient, 'id' | 'tags'> {
   id?: number,
   tags?: IClientTag[],
 }
+
+export interface IClientExact extends Omit<IClient, 'tags'> {}
 
 export interface IClientTag {
   id: number,
