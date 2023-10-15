@@ -7,7 +7,7 @@ import { roomService } from './../services/room.service';
 import { Room } from './../models/room.model';
 
 class RoomsController {
-  public async createRoom(req:Request, res:Response) {
+  public async createTable(req:Request, res:Response) {
     const name:string = String(req.body.name || '');
     const people:number = req.body.people;
     const roomId:number = +req.params.id;
