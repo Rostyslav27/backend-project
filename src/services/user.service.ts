@@ -121,7 +121,7 @@ export class UserService {
     });
   }
 
-  public addUserToRestaurant(restaurantId:number, userId:number, userRole:RestaurantRole):Promise<void> {
+  public addUserToRestaurant(userId:number, restaurantId:number, userRole:RestaurantRole):Promise<void> {
     return new Promise<void>((resolve, reject) => {
       Promise.all([
         database.models.userProfile.create({userId, restaurantId, role: userRole}),
