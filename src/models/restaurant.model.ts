@@ -1,6 +1,7 @@
 import { userService } from './../services/user.service';
 import { restaurantService } from './../services/restaurant.service';
-import { type IRestaurant, type IReservation, RestaurantRole } from './../types';
+import { type IRestaurant, type IReservation, RestaurantRole, type IRoomRaw, type IRoom } from './../types';
+import { roomService } from './../services/room.service';
 require('dotenv').config();
 
 export class Restaurant {
@@ -44,5 +45,9 @@ export class Restaurant {
 
   public addUser(userId:number, userRole:RestaurantRole):Promise<void> {
     return userService.addUserToRestaurant(userId, this._restaurant.id, userRole);
+  }
+
+  public addRoom(room:IRoomRaw):Promise<IRoom> {
+    return roomService.createRoom(room, this._restaurant.id);
   }
 }
