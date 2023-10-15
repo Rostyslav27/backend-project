@@ -15,6 +15,8 @@ export interface IUserRaw extends Omit<IUser, 'id' | 'restaurants' | 'profiles'>
   profiles?: IUserProfile[],
 }
 
+export interface IUserExact extends Omit<IUser, 'restaurants' | 'profiles'> {}
+
 export enum Role {
   Admin = 'admin',
   User = 'user',
