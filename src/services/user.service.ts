@@ -2,7 +2,7 @@
 import database, { RestaurantOrganization, RestaurantUser, UserProfileUser, RestaurantRoom, RoomTable } from './../database';
 import { Model } from 'sequelize';
 import bcrypt from 'bcryptjs';
-import { type IUser, type IUserRaw, type IUserExact, Role } from './../types';
+import { type IUser, type IUserRaw, type IUserExact, Role, RestaurantRole } from './../types';
 require('dotenv').config();
 
 const rootUser:IUser = {
@@ -118,6 +118,19 @@ export class UserService {
           reject(err);
         })
       })
+    });
+  }
+
+  public addUserToRestaurant(restaurantId:number, userId:number, userRole:RestaurantRole):Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      Promise.all([
+        database.models.userProfile.create({userId, restaurantId, role: userRole}),
+        database.models.UserRestaurant.create({userId, restaurantId})
+      ]).then(() => {
+        resolve();
+      }).catch(err => {
+        reject(err);
+      });
     });
   }
 }
