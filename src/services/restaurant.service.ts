@@ -46,6 +46,18 @@ export class RestaurantService {
       });
     });
   }
+
+  public setOrganization(restaurantId:number, organizationId:number):Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      database.models.restaurant.update({
+        organizationId,
+      }, { where: { id: restaurantId } }).then(() => {
+        resolve()
+      }).catch(err => {
+        reject(err);
+      })
+    });
+  }
 }
 
 export const restaurantService = new RestaurantService();
