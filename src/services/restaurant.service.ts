@@ -1,7 +1,7 @@
 
 import database, { RestaurantRoom, RoomTable, TableReservation, RestaurantOrganization, ReservationClient } from './../database';
 import { Model } from 'sequelize';
-import { type IRestaurant, type IRestaurantRaw } from './../types';
+import { type IRestaurant, type IRestaurantRaw, type IRestaurantExact } from './../types';
 require('dotenv').config();
 
 export class RestaurantService {
@@ -30,13 +30,13 @@ export class RestaurantService {
     });
   }
 
-  public createRestaurant(restaurant:IRestaurantRaw):Promise<void> {
-    return new Promise<void>((resolve, reject) => {
+  public createRestaurant(restaurant:IRestaurantRaw):Promise<IRestaurantExact> {
+    return new Promise<IRestaurantExact>((resolve, reject) => {
       database.models.restaurant.create<Model<IRestaurantRaw>>({
         name: restaurant.name
       }).then((restaurant) => {
         if (restaurant) {
-          resolve();
+          resolve(restaurant.toJSON() as IRestaurantExact);
         } else { 
           reject('Restaurant was not created')
         }

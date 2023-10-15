@@ -74,6 +74,8 @@ export interface IRestaurantRaw extends Omit<IRestaurant, 'id' | 'rooms' | 'clie
   clients?: IClient[],
 }
 
+export interface IRestaurantExact extends Omit<IRestaurantRaw, 'rooms' | 'clients' | 'organization'> {}
+
 export interface IRoom {
   id: number
   tables: ITable[],
