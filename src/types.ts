@@ -88,6 +88,8 @@ export interface IRoomRaw extends Omit<IRoom, 'id' | 'tables'> {
   restaurantId?:number,
 }
 
+export interface IRoomExact extends Omit<IRoom, 'tables'> {}
+
 export interface ITable {
   id: number
   name?: string,
