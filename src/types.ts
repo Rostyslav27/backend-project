@@ -137,6 +137,8 @@ export interface IClient {
   note?: string,
   restaurantId?: number,
   img?: string,
+  updatedAt?: string,
+  createdAt?: string,
 }
 
 export interface IClientFull extends IClient {
