@@ -43,6 +43,10 @@ export class Restaurant {
     return this._restaurant.id;
   }
 
+  public hasTable(tableId:number):boolean {
+    return this._restaurant.rooms.some(room => room.tables.some(table => table.id === tableId));
+  }
+
   public setOrganization(organizationId:number):Promise<void> {
     return restaurantService.setOrganization(this._restaurant.id, organizationId);
   }

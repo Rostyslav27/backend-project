@@ -40,7 +40,7 @@ export class ReservationService {
     });
   }
 
-  public editReservation(reservation:IReservationRaw, reservationId:number):Promise<void> {
+  public editReservation(reservationId:number, reservation:IReservationRaw):Promise<void> {
     return new Promise<void>((resolve, reject) => {
       database.models.reservation.update<Model<IReservationRaw>>({
         startTime: reservation.startTime,
