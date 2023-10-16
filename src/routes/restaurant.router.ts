@@ -12,6 +12,11 @@ router.post('/:id/rooms',
   tryTo(restaurantsController.createRoom, 'restaurantsController.createRoom')
 );
 
+router.post('/:id/clients', 
+  permissionMiddleware([]),
+  tryTo(restaurantsController.createClient, 'restaurantsController.createClient')
+);
+
 router.get('/:id',
   permissionMiddleware([]),
   tryTo(restaurantsController.getRestaurant, 'restaurantsController.getRestaurant')

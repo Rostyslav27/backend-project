@@ -34,8 +34,10 @@ export class ClientService {
       }).then((client) => {
         if (client) {
           const exactClient:IClient = client.toJSON() as IClient;
+          delete exactClient.createdAt;
+          delete exactClient.updatedAt;
           resolve(Object.assign(exactClient, { tags: [] }));
-        } else { 
+        } else {
           reject('Client was not created')
         }
       }).catch(err => {

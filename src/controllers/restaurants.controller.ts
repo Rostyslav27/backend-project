@@ -5,6 +5,7 @@ import { type Request, type Response } from 'express';
 import { Errors, IRestaurant, IRestaurantFull } from '../types';
 import { restaurantService } from './../services/restaurant.service';
 import { Restaurant } from './../models/restaurant.model';
+import { clientService } from './../services/client.service';
 
 class RestaurantsController {
   public async createRoom(req:Request, res:Response) {
@@ -22,6 +23,35 @@ class RestaurantsController {
       res.status(400).json(Errors.NotExist);
     });
   }
+
+  public async createClient(req:Request, res:Response) {
+    const restaurantId:number = +req.params.id;
+    const name:string | undefined = String(req.body.name || '') || undefined;
+    const surname:string | undefined = String(req.body.surname || '') || undefined;
+    const email:string | undefined = String(req.body.email || '') || undefined;
+    const phone:string | undefined = String(req.body.phone || '') || undefined;
+    const birthday:string | undefined = String(req.body.birthday || '') || undefined;
+    const gender:string | undefined = String(req.body.gender || '') || undefined;
+    const note:string | undefined = String(req.body.note || '') || undefined;
+    const img:string | undefined = String(req.body.img || '') || undefined;
+
+    clientService.createClient({
+      name,
+      surname,
+      email,
+      phone,
+      birthday,
+      gender,
+      note,
+      img,
+    }, restaurantId).then((clientInfo) => {
+      res.json(clientInfo);
+    }).catch(err => {
+      console.error(err);
+      res.status(403).json(Errors.NotExist);
+    });
+  }
+
 
   public async getReservations(req:Request, res:Response) {
     const restaurantId:number = +req.params.id;
