@@ -40,7 +40,7 @@ export const restaurantPermissionMiddleware = (roles:RestaurantRole[], options:{
         res.status(500).json('no method to get restaurant');
       }
     } catch(err:any) {
-      res.status(403).json(Errors.Unknown);
+      res.status(500).json(Errors.Unknown);
     }
   }
 }
