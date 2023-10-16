@@ -7,7 +7,7 @@ import { clientService } from './../services/client.service';
 import { Errors } from './../types';
 
 class ClientsController {
-
+  // TODO: only users from organization can edit clients 
   public async editClient(req:Request, res:Response) {
     const clientId:number = +req.params.id;
     const name:string = String(req.body.name || '');
@@ -32,12 +32,8 @@ class ClientsController {
         gender: gender || clientInfo.gender,
         note: note || clientInfo.note,
         img: img || clientInfo.img,
-      }).then(() => {
-        clientService.getFullClientById(clientId).then((clientInfo) => {
-          res.json(clientInfo);
-        }).catch(err => {
-          res.status(500).json(Errors.Unknown);
-        });
+      }).then((clientInfo) => {
+        res.json(clientInfo);
       }).catch(err => {
         res.status(500).json(Errors.Unknown);
       });

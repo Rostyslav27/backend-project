@@ -17,7 +17,18 @@ export class Client {
     return this._client.id;
   }
 
-  public edit(client:IClientRaw):Promise<void> {
-    return clientService.editClient(this._client.id, client);
+  public edit(client:IClientRaw):Promise<IClientFull> {
+    return new Promise<IClientFull>((resolve, reject) => {
+      clientService.editClient(this._client.id, client).then(() => {
+        clientService.getFullClientById(this._client.id).then((client) => {
+          this._client = client;
+          resolve(this._client);
+        }).catch(err => {
+          reject(err);
+        });
+      }).catch(err => {
+        reject(err);
+      });
+    });
   }
 }
