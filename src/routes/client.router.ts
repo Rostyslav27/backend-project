@@ -12,4 +12,9 @@ router.put('/:id',
   tryTo(clientsController.editClient, 'clientsController.editClient')
 );
 
+router.delete('/:id', 
+  permissionMiddleware([]),
+  tryTo(clientsController.deleteClient, 'clientsController.deleteClient')
+);
+
 export default router;
