@@ -7,11 +7,11 @@ require('dotenv').config();
 export class ClientService {
   public getFullClientById(id:number):Promise<IClientFull> {
     return new Promise<IClientFull>((resolve, reject) => {
-      database.models.client.findByPk<Model<IClientFull>>(id).then((client) => {
+      database.models.client.findByPk<Model<IClientFull>>(id, { attributes: {exclude: ['createdAt', 'updatedAt']} }).then((client) => {
         if (client) {
           resolve(client.toJSON());
         } else {
-          reject('No client')
+          reject('No client');
         }
       }).catch(err => {
         reject(err);
