@@ -65,6 +65,16 @@ class ReservationsController {
       });
     }
   }
+
+  public async deleteReservation(req:Request, res:Response) {
+    const reservationId:number = +req.params.id;
+
+    reservationService.deleteReservation(reservationId).then(() => {
+      res.json('success');
+    }).catch(err => {
+      res.status(500).json(Errors.Unknown);
+    })
+  }
 }
 
 export const reservationsController = new ReservationsController();

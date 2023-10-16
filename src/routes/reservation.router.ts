@@ -16,4 +16,10 @@ router.put('/:id',
   tryTo(reservationsController.editReservation, 'reservationsController.editReservation')
 );
 
+router.delete('/:id',
+  permissionMiddleware([]),
+  restaurantPermissionMiddleware([]),
+  tryTo(reservationsController.deleteReservation, 'reservationsController.deleteReservation')
+);
+
 export default router;
