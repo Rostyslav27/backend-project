@@ -7,17 +7,27 @@ require('dotenv').config();
 export class RestaurantService {
   public getRestaurantById(id:number, nested?:boolean):Promise<IRestaurant> {
     return new Promise<IRestaurant>((resolve, reject) => {
-      database.models.restaurant.findByPk<Model<IRestaurant>>(id, nested ? {
-        include: [{ 
+      database.models.restaurant.findByPk<Model<IRestaurant>>(id, {
+        include: nested ? [{ 
           association: RestaurantRoom,
+          attributes: {exclude: ['createdAt', 'updatedAt']},
           include: [{
             association: RoomTable,
+            attributes: {exclude: ['createdAt', 'updatedAt']},
             include: [{
               association: TableReservation,
+              attributes: {exclude: ['createdAt', 'updatedAt']},
             }]
           }]
-        }, RestaurantOrganization, RestaurantClient]
-      } : {} ).then((restaurant) => {
+        }, {  
+          association: RestaurantOrganization,
+          attributes: {exclude: ['createdAt', 'updatedAt']},
+        }, {
+          association: RestaurantClient,
+          attributes: {exclude: ['createdAt', 'updatedAt']},
+        }] : [],
+        attributes: {exclude: ['createdAt', 'updatedAt']},
+      }).then((restaurant) => {
         if (restaurant) {
           resolve(restaurant.toJSON());
         } else {
