@@ -135,7 +135,8 @@ export {
   ClientReservation,
   ReservationClient,
   RestaurantClient,
-  ClientRestaurant
+  ClientRestaurant,
+  Reservation
 }
 
 export default sequelize;
