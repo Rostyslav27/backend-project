@@ -7,6 +7,9 @@ export interface IUser {
   profiles: IUserProfile[],
   name?: string,
   surname?: string,
+  birthday?: string,
+  gender?: string,
+  img?: string,
 }
 
 export interface IUserRaw extends Omit<IUser, 'id' | 'restaurants' | 'profiles'> {
@@ -129,6 +132,7 @@ export interface IClient {
   note?: string,
   tags: IClientTag[],
   restaurantId?: number,
+  img?: string,
 }
 
 export interface IClientRaw extends Omit<IClient, 'id' | 'tags'> {

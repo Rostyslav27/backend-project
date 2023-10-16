@@ -7,6 +7,9 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare role: Role;
   declare name?: string | undefined;
   declare surname?: string | undefined;
+  declare birthday?: string | undefined;
+  declare gender?: string | undefined;
+  declare img?: string | undefined;
 }
 
 export const userFields = {
@@ -29,6 +32,18 @@ export const userFields = {
     allowNull: true,
   },
   surname: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  birthday: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  gender: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  img: {
     type: DataTypes.STRING,
     allowNull: true,
   },

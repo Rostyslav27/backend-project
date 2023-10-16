@@ -9,6 +9,7 @@ export class Client extends Model<InferAttributes<Client>, InferCreationAttribut
   declare birthday?: string | undefined;
   declare gender?: string | undefined;
   declare note?: string | undefined;
+  declare img?: string | undefined;
 }
 
 export const clientFields = {
@@ -37,6 +38,10 @@ export const clientFields = {
     allowNull: true,
   },
   note: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  img: {
     type: DataTypes.STRING,
     allowNull: true,
   },
