@@ -20,7 +20,7 @@ export class ReservationService {
     });
   }
 
-  public createReservation(reservation:IReservationRaw, tableId:number, clientId:number):Promise<IReservation> {
+  public createReservation(reservation:IReservationRaw, tableId:number, clientId:number | null):Promise<IReservation> {
     return new Promise<IReservation>((resolve, reject) => {
       database.models.reservation.create<Model<IReservationRaw>>({
         startTime: reservation.startTime,

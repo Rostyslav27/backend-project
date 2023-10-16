@@ -19,14 +19,14 @@ class TablesController {
     const clientSurname:string = String(req.body.clientSurname || '');
     const clientPhone:string = String(req.body.clientPhone || '');
     const clientEmail:string = String(req.body.clientEmail || '');
-    let clientId:number = +req.body.clientId;
+    let clientId:number | null = req.body.clientId === null ? null : +req.body.clientId;
 
     if (+endTime < +startTime) {
       res.status(400).json(Errors.WrongData);
     } else {
       const promiseList:Promise<any>[] = [];
 
-      if (!clientId) {
+      if (clientId === 0 && !!(clientName || clientSurname || clientPhone || clientEmail)) {
         promiseList.push(clientService.createClient({
           name: clientName,
           surname: clientSurname,
@@ -35,6 +35,8 @@ class TablesController {
         }, restaurant.getId()).then((clientInfo) => {
           clientId = clientInfo.id;
         }));
+      } else if (clientId === 0) {
+        clientId = null;
       }
 
       Promise.all(promiseList).then(() => {

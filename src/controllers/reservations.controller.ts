@@ -20,7 +20,7 @@ class ReservationsController {
     const clientSurname:string = String(req.body.clientSurname || '');
     const clientPhone:string = String(req.body.clientPhone || '');
     const clientEmail:string = String(req.body.clientEmail || '');
-    let clientId:number = +req.body.clientId;
+    let clientId:number | null = req.body.clientId === null ? null : +req.body.clientId;
 
     if (+endTime < +startTime) {
       res.status(400).json(Errors.WrongData);
@@ -31,7 +31,7 @@ class ReservationsController {
         const reservation = new Reservation(reservationInfo);
 
         if (restaurant.hasTable(tableId)) {
-          if (clientId === 0) {
+          if (clientId === 0 && !!(clientName || clientSurname || clientPhone || clientEmail)) {
             promiseList.push(clientService.createClient({
               name: clientName,
               surname: clientSurname,
@@ -40,13 +40,15 @@ class ReservationsController {
             }, restaurant.getId()).then((clientInfo) => {
               clientId = clientInfo.id;
             }));
+          } else if (clientId === 0) {
+            clientId = null;
           }
   
           Promise.all(promiseList).then(() => {
             reservation.edit({
               startTime: startTime || reservationInfo.startTime,
               endTime: endTime || reservationInfo.endTime,
-              clientId: clientId || reservationInfo.clientId,
+              clientId: clientId === null ? clientId : clientId || reservationInfo.clientId,
               tableId: tableId || reservationInfo.tableId,
               people: people || reservationInfo.people
             }).then((reservationInfo) => {

@@ -115,7 +115,7 @@ export interface ITableRaw extends Omit<ITable, 'id'> {
 export interface IReservation {
   id: number
   tableId?: number,
-  clientId?: number,
+  clientId?: number | null,
   startTime: string,
   endTime: string,
   note?: string,
