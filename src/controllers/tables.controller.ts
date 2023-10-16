@@ -6,9 +6,11 @@ import { Errors } from '../types';
 import { reservationService } from './../services/reservation.service';
 import { clientService } from './../services/client.service';
 import { restaurantService } from './../services/restaurant.service';
+import { Restaurant } from './../models/restaurant.model';
 
 class TablesController {
   public async createReservation(req:Request, res:Response) {
+    const restaurant:Restaurant = req.body.reqRestaurant;
     const tableId:number = +req.params.id;
     const startTime:string = String(req.body.startTime || '0');
     const endTime:string = String(req.body.endTime || '0');
@@ -24,29 +26,25 @@ class TablesController {
     } else {
       const promiseList:Promise<any>[] = [];
 
-      restaurantService.getRestaurantByTableId(tableId).then((restaurantInfo) => {
-        if (!clientId) {
-          promiseList.push(clientService.createClient({
-            name: clientName,
-            surname: clientSurname,
-            email: clientEmail,
-            phone: clientPhone,
-          }, restaurantInfo.id).then((clientInfo) => {
-            clientId = clientInfo.id;
-          }));
-        }
+      if (!clientId) {
+        promiseList.push(clientService.createClient({
+          name: clientName,
+          surname: clientSurname,
+          email: clientEmail,
+          phone: clientPhone,
+        }, restaurant.getId()).then((clientInfo) => {
+          clientId = clientInfo.id;
+        }));
+      }
 
-        Promise.all(promiseList).then(() => {
-          reservationService.createReservation({ startTime, endTime, people }, tableId, clientId).then((reservationInfo) => {
-            res.json(reservationInfo);
-          }).catch(err => {
-            res.status(400).json(Errors.InvalidRequest);
-          });
+      Promise.all(promiseList).then(() => {
+        reservationService.createReservation({ startTime, endTime, people }, tableId, clientId).then((reservationInfo) => {
+          res.json(reservationInfo);
         }).catch(err => {
           res.status(400).json(Errors.InvalidRequest);
         });
       }).catch(err => {
-        res.status(404).json('The table does not exist')
+        res.status(400).json(Errors.InvalidRequest);
       });
     }
   }
