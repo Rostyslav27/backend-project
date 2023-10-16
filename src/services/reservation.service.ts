@@ -39,6 +39,36 @@ export class ReservationService {
       });
     });
   }
+
+  public editReservation(reservation:IReservationRaw, reservationId:number):Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      database.models.reservation.update<Model<IReservationRaw>>({
+        startTime: reservation.startTime,
+        endTime: reservation.endTime,
+        people: reservation.people,
+        tableId: reservation.tableId,
+        clientId: reservation.clientId,
+      }, { where: { id: reservationId } }).then((count) => {
+        if (count[0] > 0) {
+          resolve();
+        } else {
+          reject('reservation was not updated');
+        }
+      }).catch(err => {
+        reject(err);
+      });
+    });
+  }
+
+  public deleteReservation(reservationId:number):Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      database.models.reservation.destroy<Model<IReservationRaw>>({ where: { id: reservationId } }).then((count) => {
+        resolve();
+      }).catch(err => {
+        reject(err);
+      });
+    });
+  }
 }
 
 export const reservationService = new ReservationService();
