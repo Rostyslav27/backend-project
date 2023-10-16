@@ -14,7 +14,6 @@ export class RestaurantService {
             association: RoomTable,
             include: [{
               association: TableReservation,
-              include: [ReservationClient]
             }]
           }]
         }, RestaurantOrganization, RestaurantClient]
