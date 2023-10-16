@@ -33,7 +33,6 @@ class RestaurantsController {
     const birthday:string | undefined = String(req.body.birthday || '') || undefined;
     const gender:string | undefined = String(req.body.gender || '') || undefined;
     const note:string | undefined = String(req.body.note || '') || undefined;
-    const img:string | undefined = String(req.body.img || '') || undefined;
 
     clientService.createClient({
       name,
@@ -43,7 +42,6 @@ class RestaurantsController {
       birthday,
       gender,
       note,
-      img,
     }, restaurantId).then((clientInfo) => {
       res.json(clientInfo);
     }).catch(err => {

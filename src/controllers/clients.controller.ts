@@ -17,7 +17,6 @@ class ClientsController {
     const birthday:string = String(req.body.birthday || '');
     const gender:string = String(req.body.gender || '');
     const note:string = String(req.body.note || '');
-    const img:string = String(req.body.img || '');
     const tags:string = req.body.tags && req.body.tags.length ? req.body.tags.filter((tag:any) => typeof tag === 'number').map((tag:number) => +tag) : [];
 
     clientService.getFullClientById(clientId).then((clientInfo) => {
@@ -31,7 +30,6 @@ class ClientsController {
         birthday: birthday || clientInfo.birthday,
         gender: gender || clientInfo.gender,
         note: note || clientInfo.note,
-        img: img || clientInfo.img,
       }).then((clientInfo) => {
         res.json(clientInfo);
       }).catch(err => {
