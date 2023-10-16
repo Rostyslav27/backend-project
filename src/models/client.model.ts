@@ -1,4 +1,5 @@
-import { type IClientFull } from './../types';
+import { type IClientFull, type IClientRaw } from './../types';
+import { clientService } from './../services/client.service';
 require('dotenv').config();
 
 export class Client {
@@ -14,5 +15,9 @@ export class Client {
 
   public getId():number {
     return this._client.id;
+  }
+
+  public edit(client:IClientRaw):Promise<void> {
+    return clientService.editClient(this._client.id, client);
   }
 }

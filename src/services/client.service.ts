@@ -44,7 +44,7 @@ export class ClientService {
     });
   }
 
-  public editClient(client:IClientRaw, clientId:number):Promise<void> {
+  public editClient(clientId:number, client:IClientRaw):Promise<void> {
     return new Promise<void>((resolve, reject) => {
       database.models.client.update<Model<IClientRaw>>({
         name: client.name,
