@@ -43,6 +43,17 @@ class ClientsController {
       });
     }).catch(err => {
       console.error(err);
+      res.status(403).json(Errors.NotExist);
+    });
+  }
+
+  public async deleteClient(req:Request, res:Response) {
+    const clientId:number = +req.params.id;
+
+    clientService.deleteClient(clientId).then(() => {
+      res.json('success');
+    }).catch(err => {
+      console.error(err);
       res.status(403).json(Errors.Exist);
     });
   }
