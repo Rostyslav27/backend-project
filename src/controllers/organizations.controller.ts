@@ -11,7 +11,7 @@ import { Role, Errors, RestaurantRole } from './../types';
 
 class OrganizationsController {
   public async getOrganizations(req:Request, res:Response) {
-    organizationService.getOrganizations().then((organizations) => {
+    organizationService.getFullOrganizations().then((organizations) => {
       res.json(organizations);
     }).catch(err => {
       console.error(err);
@@ -25,7 +25,7 @@ class OrganizationsController {
     let organization:Organization;
 
     Promise.all([
-      userService.createOrGetUserByEmail({
+      userService.createOrGetFullUserByEmail({
         email: String(req.body.userEmail || ''),
         password: String(req.body.userPassword || '-'),
         role: Role.User,
@@ -55,7 +55,7 @@ class OrganizationsController {
         restaurant.setOrganization(restaurant.getId()),
         restaurant.addUser(user.getId(), RestaurantRole.Owner),
       ]).then(() => {
-        organizationService.getOrganizationById(organization.getId()).then(organization => {
+        organizationService.getFullOrganizationById(organization.getId()).then(organization => {
           res.json(organization);
         }).catch(err => {
           res.status(500).json(Errors.Unknown);
@@ -75,7 +75,7 @@ class OrganizationsController {
     const blocked:boolean = !!req.body.blocked;
     const organizationName:string = String(req.body.organizationName || '');
 
-    organizationService.getOrganizationById(organizationId).then((organizationInfo) => {
+    organizationService.getFullOrganizationById(organizationId).then((organizationInfo) => {
       const organization = new Organization(organizationInfo);
 
       organization.edit({

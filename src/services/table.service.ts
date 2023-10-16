@@ -1,20 +1,20 @@
 
 import database from './../database';
 import { Model } from 'sequelize';
-import { type ITableRaw, type ITable, type ITableExact } from './../types';
+import { type ITableRaw, type ITable, type ITableFull } from './../types';
 require('dotenv').config();
 
 export class TableService {
-  public createTable(table:ITableRaw, roomId?:number):Promise<ITable> {
-    return new Promise<ITable>((resolve, reject) => {
+  public createTable(table:ITableRaw, roomId?:number):Promise<ITableFull> {
+    return new Promise<ITableFull>((resolve, reject) => {
       database.models.table.create<Model<ITableRaw>>({
         name: table.name,
         people: table.people,
         roomId 
       }).then((table) => {
         if (table) {
-          const exactTable:ITableExact = table.toJSON();
-          resolve(Object.assign(exactTable, { reservations: [] }) as ITable);
+          const exactTable:ITable = table.toJSON();
+          resolve(Object.assign(exactTable, { reservations: [] }));
         } else { 
           reject('Table was not created')
         }

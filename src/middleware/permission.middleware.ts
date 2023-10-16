@@ -25,7 +25,7 @@ export const permissionMiddleware = (roles:Role[], options:{self?:boolean, autho
             const userInfo = jwt.verify(token, jwtKey);
 
             if (typeof userInfo != 'string' && !!userInfo.id) {
-              userService.getUserById(+userInfo.id).then((userInfo) => {
+              userService.getFullUserById(+userInfo.id).then((userInfo) => {
                 const user = new User(userInfo);
                 let havePermission:boolean = user.hasPermisson(roles);
                 let selfPermission:boolean = !!(options.self && req.body.id === user.getId());

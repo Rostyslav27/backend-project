@@ -1,7 +1,7 @@
 
 import database from './../database';
 import { Model } from 'sequelize';
-import { type IRoomRaw, type IRoom, type IRoomExact } from './../types';
+import { type IRoomRaw, type IRoomFull, type IRoom } from './../types';
 require('dotenv').config();
 
 export class RoomService {
@@ -19,14 +19,14 @@ export class RoomService {
     });
   }
 
-  public createRoom(room:IRoomRaw, restaurantId?:number):Promise<IRoom> {
-    return new Promise<IRoom>((resolve, reject) => {
+  public createRoom(room:IRoomRaw, restaurantId?:number):Promise<IRoomFull> {
+    return new Promise<IRoomFull>((resolve, reject) => {
       database.models.room.create<Model<IRoomRaw>>({
         name: room.name,
         restaurantId 
       }).then((room) => {
         if (room) {
-          const exactRoom:IRoomExact = room.toJSON() as IRoomExact;
+          const exactRoom:IRoom = room.toJSON() as IRoom;
           resolve(Object.assign(exactRoom, { tables: [] }));
         } else { 
           reject('Room was not created')

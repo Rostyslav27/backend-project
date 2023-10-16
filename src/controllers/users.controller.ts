@@ -2,7 +2,7 @@
 require('dotenv').config(); 
 
 import { type Request, type Response } from 'express';
-import { Errors, IUserProfile, type IUser} from '../types';
+import { Errors, type IUserProfile, type IUserFull } from '../types';
 import { User } from './../models/user.model';
 import { userService } from './../services/user.service';
 
@@ -11,9 +11,9 @@ class UsersController {
     const email = String(req.body.email || '');
     const password = String(req.body.password || '');
 
-    userService.getUserByEmail(String(email)).then((userInfo) => {
+    userService.getFullUserByEmail(String(email)).then((userInfo) => {
       const user = new User(userInfo);
-      
+
       if (user.getId() !== 0) {
         if (user.getToken(password)) {
           res.json({token: user.getToken(password)});
@@ -32,7 +32,7 @@ class UsersController {
     const reqUser:User = req.body.reqUser;
     const userInfo = reqUser.getInfo();
     const userProfilesMap:{[key:string]: IUserProfile} = Object.fromEntries(userInfo.profiles.map(profile => [profile.restaurantId, profile]));
-    const normalizedUserInfo:IUser = Object.assign({...userInfo}, { restaurants: [], profiles: [] });
+    const normalizedUserInfo:IUserFull = Object.assign({...userInfo}, { restaurants: [], profiles: [] });
 
     userInfo.restaurants.forEach(restaurant => {
       if (restaurant.organization && !restaurant.organization.blocked && userProfilesMap[restaurant.id]) {

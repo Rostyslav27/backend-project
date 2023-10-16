@@ -1,23 +1,13 @@
 
 import database from './../database';
 import { Model } from 'sequelize';
-import { type IClientRaw, type IClient, type IClientExact } from './../types';
+import { type IClientRaw, type IClientFull, type IClient } from './../types';
 require('dotenv').config();
 
 export class ClientService {
-  
-  public getClients(restaurantId:number):Promise<IClient[]> {
-    return new Promise<IClient[]>((resolve, reject) => {
-      database.models.client.findAll({ where: { restaurantId }, raw: true }).then((clients:any) => {
-        resolve(clients as IClient[]);
-      }).catch(err => {
-        reject(err);
-      });
-    });
-  }
 
-  public createClient(client:IClientRaw, restaurantId:number):Promise<IClient> {
-    return new Promise<IClient>((resolve, reject) => {
+  public createClient(client:IClientRaw, restaurantId:number):Promise<IClientFull> {
+    return new Promise<IClientFull>((resolve, reject) => {
       database.models.client.create<Model<IClientRaw>>({
         name: client.name,
         surname: client.surname,
@@ -29,7 +19,7 @@ export class ClientService {
         restaurantId: restaurantId
       }).then((client) => {
         if (client) {
-          const exactClient:IClientExact = client.toJSON() as IClientExact;
+          const exactClient:IClient = client.toJSON() as IClient;
           resolve(Object.assign(exactClient, { tags: [] }));
         } else { 
           reject('Client was not created')

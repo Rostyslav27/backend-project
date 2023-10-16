@@ -1,4 +1,4 @@
-import { type IUser, type IUserRaw, Role } from './../types';
+import { type IUserFull, type IUserRaw, Role } from './../types';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { userService } from './../services/user.service';
@@ -7,13 +7,13 @@ require('dotenv').config();
 const jwtKey:string = process.env.JWT_KEY || 'rvdfnobufig5';
 
 export class User {
-  private _user: IUser;
+  private _user: IUserFull;
 
-  constructor(user:IUser) {
+  constructor(user:IUserFull) {
     this._user = user;
   }
 
-  public getInfo():IUser {
+  public getInfo():IUserFull {
     return Object.assign({...this._user}, { password: '*' });
   }
 

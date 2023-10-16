@@ -1,17 +1,21 @@
 import { userService } from './../services/user.service';
 import { restaurantService } from './../services/restaurant.service';
-import { type IRestaurant, type IReservation, RestaurantRole, type IRoomRaw, type IRoom } from './../types';
+import { type IRestaurant, type IReservation, RestaurantRole, type IRoomRaw, type IRoom, IRestaurantFull } from './../types';
 import { roomService } from './../services/room.service';
 require('dotenv').config();
 
 export class Restaurant {
-  private _restaurant: IRestaurant;
+  private _restaurant: IRestaurantFull;
 
-  constructor(restaurant:IRestaurant) {
-    this._restaurant = restaurant;
+  constructor(restaurant:IRestaurant | IRestaurantFull) {
+    if ('rooms' in restaurant) {
+      this._restaurant = restaurant;
+    } else {
+      this._restaurant = Object.assign(restaurant, { rooms: [], clients: [] }) satisfies IRestaurantFull
+    }
   }
 
-  public getInfo():IRestaurant {
+  public getInfo():IRestaurantFull {
     return this._restaurant;
   }
 

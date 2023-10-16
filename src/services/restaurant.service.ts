@@ -1,14 +1,14 @@
 
 import database, { RestaurantRoom, RoomTable, TableReservation, RestaurantOrganization, ReservationClient, RestaurantClient, Room, Table } from './../database';
 import { Model } from 'sequelize';
-import { type IRestaurant, type IRestaurantRaw, type IRestaurantExact } from './../types';
+import { type IRestaurant, type IRestaurantRaw, type IRestaurantFull } from './../types';
 require('dotenv').config();
 
 export class RestaurantService {
-  public getRestaurantById(id:number, nested?:boolean):Promise<IRestaurant> {
-    return new Promise<IRestaurant>((resolve, reject) => {
-      database.models.restaurant.findByPk<Model<IRestaurant>>(id, {
-        include: nested ? [{ 
+  public getFullRestaurantById(id:number):Promise<IRestaurantFull> {
+    return new Promise<IRestaurantFull>((resolve, reject) => {
+      database.models.restaurant.findByPk<Model<IRestaurantFull>>(id, {
+        include: [{ 
           association: RestaurantRoom,
           attributes: {exclude: ['createdAt', 'updatedAt']},
           include: [{
@@ -25,7 +25,23 @@ export class RestaurantService {
         }, {
           association: RestaurantClient,
           attributes: {exclude: ['createdAt', 'updatedAt']},
-        }] : [],
+        }],
+        attributes: {exclude: ['createdAt', 'updatedAt']},
+      }).then((restaurant) => {
+        if (restaurant) {
+          resolve(restaurant.toJSON());
+        } else {
+          reject('No restaurant')
+        }
+      }).catch(err => {
+        reject(err);
+      })
+    });
+  }
+
+  public getRestaurantById(id:number):Promise<IRestaurant> {
+    return new Promise<IRestaurant>((resolve, reject) => {
+      database.models.restaurant.findByPk<Model<IRestaurant>>(id, {
         attributes: {exclude: ['createdAt', 'updatedAt']},
       }).then((restaurant) => {
         if (restaurant) {
@@ -68,14 +84,14 @@ export class RestaurantService {
     });
   }
 
-  public createRestaurant(restaurant:IRestaurantRaw):Promise<IRestaurant> {
-    return new Promise<IRestaurant>((resolve, reject) => {
+  public createRestaurant(restaurant:IRestaurantRaw):Promise<IRestaurantFull> {
+    return new Promise<IRestaurantFull>((resolve, reject) => {
       database.models.restaurant.create<Model<IRestaurantRaw>>({
         name: restaurant.name
       }).then((restaurant) => {
         if (restaurant) {
-          const rawRestaurant:IRestaurantExact = restaurant.toJSON() as IRestaurantExact;
-          resolve(Object.assign(rawRestaurant, { rooms: [], clients: [] }) as IRestaurant);
+          const rawRestaurant:IRestaurant = restaurant.toJSON() as IRestaurant;
+          resolve(Object.assign(rawRestaurant, { rooms: [], clients: [] }) as IRestaurantFull);
         } else { 
           reject('Restaurant was not created')
         }

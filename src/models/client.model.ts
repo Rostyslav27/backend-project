@@ -1,14 +1,14 @@
-import { type IClient } from './../types';
+import { type IClientFull } from './../types';
 require('dotenv').config();
 
 export class Client {
-  private _client: IClient;
+  private _client: IClientFull;
 
-  constructor(client:IClient) {
+  constructor(client:IClientFull) {
     this._client = client;
   }
 
-  public getInfo():IClient {
+  public getInfo():IClientFull {
     return this._client;
   }
 

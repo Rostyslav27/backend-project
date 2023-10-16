@@ -3,8 +3,6 @@ export interface IUser {
   email: string,
   password: string,
   role: Role,
-  restaurants: IRestaurant[],
-  profiles: IUserProfile[],
   name?: string,
   surname?: string,
   birthday?: string,
@@ -12,13 +10,14 @@ export interface IUser {
   img?: string,
 }
 
-export interface IUserRaw extends Omit<IUser, 'id' | 'restaurants' | 'profiles'> {
-  id?: number,
-  restaurants?: IRestaurantRaw[],
-  profiles?: IUserProfile[],
+export interface IUserFull extends IUser {
+  restaurants: IRestaurantExpanded[],
+  profiles: IUserProfile[],
 }
 
-export interface IUserExact extends Omit<IUser, 'restaurants' | 'profiles'> {}
+export interface IUserRaw extends Omit<IUser, 'id'> {
+  id?: number,
+}
 
 export enum Role {
   Admin = 'admin',
@@ -28,10 +27,10 @@ export enum Role {
 export interface IUserProfile {
   id: number,
   role: RestaurantRole,
-  restaurantId: number,
+  restaurantId?: number,
 }
 
-export interface IUserProfileRaw extends Omit<IUserProfile, 'id' | 'restaurantId'> {
+export interface IUserProfileRaw extends Omit<IUserProfile, 'id'> {
   id?: number,
 }
 
@@ -42,21 +41,21 @@ export enum RestaurantRole {
 
 export interface IOrganization {
   id: number
-  owner?: IUser,
-  restaurants: IRestaurant[],
+  ownerId?: number,
   tarrif: number,
   blocked?: boolean,
   name?: string,
   img?: string,
 }
 
-export interface IOrganizationRaw extends Omit<IOrganization, 'id' | 'owner' | 'restaurants'> {
-  id?: number,
-  owner?: IUserRaw,
-  restaurants?: IRestaurantRaw[],
+export interface IOrganizationFull extends IOrganization {
+  owner?: IUser,
+  restaurants: IRestaurant[],
 }
 
-export interface IOrganizationExact extends Omit<IOrganization, 'owner' | 'restaurants'> {}
+export interface IOrganizationRaw extends Omit<IOrganization, 'id'> {
+  id?: number,
+}
 
 export interface IRestaurant {
   id: number
@@ -66,46 +65,52 @@ export interface IRestaurant {
   country?: string,
   city?: string,
   address?: string,
-  rooms: IRoom[],
-  clients: IClient[],
+  organizationId?: number
+}
+
+export interface IRestaurantExpanded extends IRestaurant {
   organization?: IOrganization
 }
 
-export interface IRestaurantRaw extends Omit<IRestaurant, 'id' | 'rooms' | 'clients'> {
-  id?: number,
-  rooms?: IRoom[],
-  clients?: IClient[],
+export interface IRestaurantFull extends IRestaurant  {
+  rooms: IRoomFull[],
+  clients: IClientFull[],
+  organization?: IOrganization
 }
 
-export interface IRestaurantExact extends Omit<IRestaurantRaw, 'rooms' | 'clients' | 'organization'> {}
+export interface IRestaurantRaw extends Omit<IRestaurant, 'id'> {
+  id?: number,
+}
 
 export interface IRoom {
   id: number
-  tables: ITable[],
   name?: string,
 }
 
-export interface IRoomRaw extends Omit<IRoom, 'id' | 'tables'> {
+export interface IRoomFull extends IRoom {
+  tables: ITableFull[],
+}
+
+export interface IRoomRaw extends Omit<IRoom, 'id'> {
   id?: number,
   tables?: ITable[],
   restaurantId?:number,
 }
 
-export interface IRoomExact extends Omit<IRoom, 'tables'> {}
-
 export interface ITable {
   id: number
   name?: string,
   people?: number,
-  reservations?: IReservation[]
+  roomId?:number,
+}
+
+export interface ITableFull extends ITable {
+  reservations: IReservation[]
 }
 
 export interface ITableRaw extends Omit<ITable, 'id'> {
   id?: number,
-  roomId?:number,
 }
-
-export interface ITableExact extends Omit<ITable, 'reservations'> {}
 
 export interface IReservation {
   id: number
@@ -130,17 +135,17 @@ export interface IClient {
   birthday?: string,
   gender?: string,
   note?: string,
-  tags: IClientTag[],
   restaurantId?: number,
   img?: string,
 }
 
-export interface IClientRaw extends Omit<IClient, 'id' | 'tags'> {
-  id?: number,
-  tags?: IClientTag[],
+export interface IClientFull extends IClient {
+  tags: IClientTag[],
 }
 
-export interface IClientExact extends Omit<IClient, 'tags'> {}
+export interface IClientRaw extends Omit<IClient, 'id'> {
+  id?: number,
+}
 
 export interface IClientTag {
   id: number,

@@ -1,15 +1,15 @@
-import { type IOrganizationRaw, type IOrganization } from './../types';
+import { type IOrganizationRaw, type IOrganizationFull } from './../types';
 import { organizationService } from './../services/organization.service';
 require('dotenv').config();
 
 export class Organization {
-  private _organization: IOrganization;
+  private _organization: IOrganizationFull;
 
-  constructor(organization:IOrganization) {
+  constructor(organization:IOrganizationFull) {
     this._organization = organization;
   }
 
-  public getInfo():IOrganization {
+  public getInfo():IOrganizationFull {
     return this._organization;
   }
 

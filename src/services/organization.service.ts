@@ -1,23 +1,27 @@
 
 import database, { OrganizationOwner, OrganizationRestaurants } from './../database';
 import { Model } from 'sequelize';
-import { type IOrganization, type IOrganizationRaw, type IOrganizationExact } from './../types';
+import { type IOrganization, type IOrganizationRaw, type IOrganizationFull } from './../types';
 require('dotenv').config();
 
 export class OrganizationService {
-  public getOrganizationById(id:number):Promise<IOrganization> {
-    return new Promise<IOrganization>((resolve, reject) => {
-      database.models.organization.findByPk<Model<IOrganization>>(id, {
+  public getFullOrganizationById(id:number):Promise<IOrganizationFull> {
+    return new Promise<IOrganizationFull>((resolve, reject) => {
+      database.models.organization.findByPk<Model<IOrganizationFull>>(id, {
         include: [
           {
             association: OrganizationOwner,
-            required: true,
+            attributes: {exclude: ['createdAt', 'updatedAt']},
           },
-          OrganizationRestaurants
-        ]
+          { 
+            association: OrganizationRestaurants,
+            attributes: {exclude: ['createdAt', 'updatedAt']},
+          }
+        ],
+        attributes: {exclude: ['updatedAt']},
       }).then((organization) => {
         if (organization) {
-          const _organization:IOrganization = organization.toJSON();
+          const _organization:IOrganizationFull = organization.toJSON();
           if (_organization.owner) {
             _organization.owner.password = '*';
           }
@@ -31,16 +35,20 @@ export class OrganizationService {
     });
   }
 
-  public getOrganizations():Promise<IOrganization[]> {
-    return new Promise<IOrganization[]>((resolve, reject) => {
-      database.models.organization.findAll<Model<IOrganization>>({
+  public getFullOrganizations():Promise<IOrganizationFull[]> {
+    return new Promise<IOrganizationFull[]>((resolve, reject) => {
+      database.models.organization.findAll<Model<IOrganizationFull>>({
         include: [
           {
             association: OrganizationOwner,
-            required: true,
+            attributes: {exclude: ['createdAt', 'updatedAt']},
           },
-          OrganizationRestaurants
-        ]
+          { 
+            association: OrganizationRestaurants,
+            attributes: {exclude: ['createdAt', 'updatedAt']},
+          }
+        ],
+        attributes: {exclude: ['updatedAt']},
       }).then((organizations) => {
         const _organizations = organizations.map(organization => organization.toJSON()).filter(organization => organization.owner);
         _organizations.forEach(organization => organization.owner ? organization.owner.password = '*' : void(0));
@@ -51,14 +59,14 @@ export class OrganizationService {
     });
   }
 
-  public createOrganization(organization:IOrganizationRaw):Promise<IOrganization> {
-    return new Promise<IOrganization>((resolve, reject) => {
+  public createOrganization(organization:IOrganizationRaw):Promise<IOrganizationFull> {
+    return new Promise<IOrganizationFull>((resolve, reject) => {
       database.models.organization.create<Model<IOrganizationRaw>>({
         name: organization.name,
         tarrif: organization.tarrif,
       }).then((organization) => {
         if (organization) {
-          const rawOrganization:IOrganizationExact = organization.toJSON() as IOrganizationExact
+          const rawOrganization:IOrganization = organization.toJSON() as IOrganization
           resolve(Object.assign(rawOrganization, { restaurants: [] }));
         } else { 
           reject('Organization was not created')

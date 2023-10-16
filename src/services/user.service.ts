@@ -1,11 +1,11 @@
 
-import database, { RestaurantOrganization, RestaurantUser, UserProfileUser, RestaurantRoom, RoomTable } from './../database';
+import database, { RestaurantOrganization, UserProfileUser, Restaurant } from './../database';
 import { Model } from 'sequelize';
 import bcrypt from 'bcryptjs';
-import { type IUser, type IUserRaw, type IUserExact, Role, RestaurantRole } from './../types';
+import { type IUser, type IUserRaw, type IUserFull, Role, RestaurantRole } from './../types';
 require('dotenv').config();
 
-const rootUser:IUser = {
+const rootUser:IUserFull = {
   "id": -76,
   "name": "root",
   "email": "roctik4x@gmail.com",
@@ -16,27 +16,29 @@ const rootUser:IUser = {
 };
 
 export class UserService {
-  public getUserById(id:number):Promise<IUser> {
-    return new Promise<IUser>((resolve, reject) => {
+  public getFullUserById(id:number):Promise<IUserFull> {
+    return new Promise<IUserFull>((resolve, reject) => {
       if (id === -76) {
         resolve(rootUser);
       } else {
-        database.models.user.findByPk(id, { 
+        database.models.user.findByPk<Model<IUserFull>>(id, { 
           include: [ 
             { 
-              association: RestaurantUser, 
+              model: Restaurant, 
+              attributes: {exclude: ['createdAt', 'updatedAt', 'UserRestaurant']},
               include: [
-                RestaurantOrganization, 
-                { 
-                  association: RestaurantRoom, 
-                  include: [RoomTable] 
+                {
+                  association: RestaurantOrganization,
+                  attributes: {exclude: ['createdAt', 'updatedAt']},
                 }
               ] 
             }, 
             { 
-              association: UserProfileUser 
+              association: UserProfileUser,
+              attributes: {exclude: ['createdAt', 'updatedAt']},
             } 
-          ] 
+          ],
+          attributes: {exclude: ['createdAt', 'updatedAt']},
         }).then((user) => {
           if (user) {
             resolve(user.toJSON());
@@ -50,12 +52,30 @@ export class UserService {
     });
   }
 
-  public getUserByEmail(email:string):Promise<IUser> {
+  public getFullUserByEmail(email:string):Promise<IUserFull> {
     if (email === 'root' || email === process.env.ROOT_EMAIL) {
-      return this.getUserById(-76);
+      return this.getFullUserById(-76);
     } else {
-      return new Promise<IUser>((resolve, reject) => {
-        database.models.user.findOne({ where: { email }, include: [ { association: RestaurantUser, include: [{ association: RestaurantOrganization, include: [RoomTable] }] }, { association: UserProfileUser } ] }).then((user) => {
+      return new Promise<IUserFull>((resolve, reject) => {
+        database.models.user.findOne({ where: { email }, 
+          include: [ 
+            { 
+              model: Restaurant, 
+              attributes: {exclude: ['createdAt', 'updatedAt']},
+              include: [
+                {
+                  association: RestaurantOrganization,
+                  attributes: {exclude: ['createdAt', 'updatedAt']},
+                }
+              ] 
+            }, 
+            { 
+              association: UserProfileUser,
+              attributes: {exclude: ['createdAt', 'updatedAt']},
+            } 
+          ],
+          attributes: {exclude: ['createdAt', 'updatedAt']},
+        }).then((user) => {
           if (user) {
             resolve(user.toJSON());
           } else {
@@ -68,8 +88,8 @@ export class UserService {
     }
   }
 
-  public createUser(user:IUserRaw):Promise<IUser> {
-    return new Promise<IUser>((resolve, reject) => {
+  public createUser(user:IUserRaw):Promise<IUserFull> {
+    return new Promise<IUserFull>((resolve, reject) => {
       database.models.user.create<Model<IUserRaw>>({
         email: user.email,
         password: bcrypt.hashSync(user.password, 7),
@@ -78,7 +98,7 @@ export class UserService {
         role: user.role,
       }).then((user) => {
         if (user) {
-          const rawUser:IUserExact = user.toJSON() as IUserExact;
+          const rawUser:IUser = user.toJSON() as IUser;
           resolve(Object.assign(rawUser, { restaurants: [], profiles: [] }));
         } else {
           reject('User was not created')
@@ -103,13 +123,13 @@ export class UserService {
     });
   }
 
-  public createOrGetUserByEmail(user:IUserRaw):Promise<IUser> {
-    return new Promise<IUser>((resolve, reject) => {
-      this.getUserByEmail(user.email).then((user) => {
+  public createOrGetFullUserByEmail(user:IUserRaw):Promise<IUserFull> {
+    return new Promise<IUserFull>((resolve, reject) => {
+      this.getFullUserByEmail(user.email).then((user) => {
         resolve(user);
       }).catch(err => {
         this.createUser(user).then((user) => {
-          this.getUserById(user.id).then(user => {
+          this.getFullUserById(user.id).then(user => {
             resolve(user);
           }).catch(err => {
             reject(err);
