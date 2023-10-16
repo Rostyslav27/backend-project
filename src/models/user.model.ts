@@ -1,4 +1,4 @@
-import { type IUserFull, type IUserRaw, Role } from './../types';
+import { type IUserFull, type IUserRaw, Role, RestaurantRole } from './../types';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { userService } from './../services/user.service';
@@ -23,6 +23,15 @@ export class User {
 
   hasPermisson(roles:Role[]):boolean {
     return roles.length ? roles.includes(this._user.role) : true;
+  }
+
+  hasRestaurantPermisson(roles:RestaurantRole[], restaurantId:number):boolean {
+    const profileIndex = this._user.profiles.findIndex(profile => profile.restaurantId && profile.restaurantId === restaurantId);
+    if (profileIndex > -1) {
+      return roles.length ? roles.includes(this._user.profiles[profileIndex].role) : true;
+    } else {
+      return false;
+    }
   }
 
   public getToken(password:string, remember?:boolean):string {
