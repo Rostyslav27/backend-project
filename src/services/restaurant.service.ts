@@ -1,5 +1,5 @@
 
-import database, { RestaurantRoom, RoomTable, TableReservation, RestaurantOrganization, Reservation, RestaurantClient, Room, Table, User } from './../database';
+import database, { RestaurantRoom, RoomTable, TableReservation, RestaurantOrganization, Reservation, RestaurantClient, Room, Table, User, UserProfileUser } from './../database';
 import { Model } from 'sequelize';
 import { type IRestaurant, type IRestaurantRaw, type IRestaurantFull } from './../types';
 require('dotenv').config();
@@ -25,6 +25,12 @@ export class RestaurantService {
         }, {  
           model: User,
           attributes: {exclude: ['createdAt', 'updatedAt', 'password']},
+          include: [{
+            association: UserProfileUser,
+            where: {
+              restaurantId: id,
+            }
+          }]
         }, {
           association: RestaurantClient,
           attributes: {exclude: ['createdAt', 'updatedAt']},
