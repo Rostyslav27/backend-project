@@ -31,6 +31,7 @@ export class UserService {
                 include: [
                   {
                     association: RestaurantOrganization,
+                    required: true,
                     attributes: {exclude: ['createdAt', 'updatedAt']},
                   }
                 ] 
@@ -67,6 +68,7 @@ export class UserService {
                 include: [
                   {
                     association: RestaurantOrganization,
+                    required: true,
                     attributes: {exclude: ['createdAt', 'updatedAt']},
                   }
                 ] 

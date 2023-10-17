@@ -21,12 +21,14 @@ export class RestaurantService {
           }]
         }, {  
           association: RestaurantOrganization,
+          required: true,
           attributes: {exclude: ['createdAt', 'updatedAt']},
         }, {  
           association: RestaurantUserProfile,
           attributes: {exclude: ['createdAt', 'updatedAt']},
           include: [{
             association: ProfileUserUser,
+            required: true,
             attributes: {exclude: ['createdAt', 'updatedAt', 'password']},
           }]
         }, {
