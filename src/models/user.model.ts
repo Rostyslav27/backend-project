@@ -35,7 +35,7 @@ export class User {
   }
 
   public getToken(password:string, remember?:boolean):string {
-    if (bcrypt.compareSync(password, this._user.password)) {
+    if (this._user.password && bcrypt.compareSync(password, this._user.password)) {
       return jwt.sign({id: this._user.id}, jwtKey, {expiresIn: remember ? '90d' : '2d'});
     } else {
       return '';
@@ -43,7 +43,7 @@ export class User {
   }
 
   public static hashPassword(user:IUserRaw):IUserRaw {
-    return Object.assign({...user}, { password: bcrypt.hashSync(user.password, 7) });
+    return Object.assign({...user}, { password: bcrypt.hashSync(user.password || '-', 7) });
   }
 
   public edit(user:IUserRaw):Promise<void> {

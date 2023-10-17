@@ -11,7 +11,7 @@ export class OrganizationService {
         include: [
           {
             association: OrganizationOwner,
-            attributes: {exclude: ['createdAt', 'updatedAt']},
+            attributes: {exclude: ['createdAt', 'updatedAt', 'password']},
           },
           { 
             association: OrganizationRestaurants,
@@ -21,11 +21,7 @@ export class OrganizationService {
         attributes: {exclude: ['updatedAt']},
       }).then((organization) => {
         if (organization) {
-          const _organization:IOrganizationFull = organization.toJSON();
-          if (_organization.owner) {
-            _organization.owner.password = '*';
-          }
-          resolve(_organization);
+          resolve(organization.toJSON());
         } else {
           reject('No organization')
         }

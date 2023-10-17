@@ -1,7 +1,7 @@
 export interface IUser {
   id: number,
   email: string,
-  password: string,
+  password?: string,
   role: Role,
   name?: string,
   surname?: string,
@@ -75,7 +75,8 @@ export interface IRestaurantExpanded extends IRestaurant {
 export interface IRestaurantFull extends IRestaurant  {
   rooms: IRoomFull[],
   clients: IClientFull[],
-  organization?: IOrganization
+  organization?: IOrganization,
+  users: IUser[]
 }
 
 export interface IRestaurantRaw extends Omit<IRestaurant, 'id'> {

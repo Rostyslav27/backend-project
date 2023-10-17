@@ -92,7 +92,7 @@ export class UserService {
     return new Promise<IUserFull>((resolve, reject) => {
       database.models.user.create<Model<IUserRaw>>({
         email: user.email,
-        password: bcrypt.hashSync(user.password, 7),
+        password: bcrypt.hashSync(user.password || '-', 7),
         name: user.name,
         surname: user.surname,
         role: user.role,
