@@ -56,7 +56,7 @@ export class Restaurant {
   }
 
   public addUser(userId:number, userRole:RestaurantRole):Promise<void> {
-    return userService.addUserToRestaurant(userId, this._restaurant.id, userRole);
+    return userService.addUserToRestaurant(userId, this._restaurant.id, { role: userRole });
   }
 
   public addRoom(room:IRoomRaw):Promise<IRoom> {

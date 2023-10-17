@@ -26,8 +26,14 @@ export enum Role {
 
 export interface IUserProfile {
   id: number,
+  name?: string,
+  surname?: string,
+  birthday?: string,
+  gender?: string,
+  img?: string,
   role: RestaurantRole,
   restaurantId?: number,
+  userId?: number,
 }
 
 export interface IUserProfileRaw extends Omit<IUserProfile, 'id'> {

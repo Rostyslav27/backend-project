@@ -2,7 +2,7 @@
 import database, { RestaurantOrganization, UserProfileUser, Restaurant } from './../database';
 import { Model } from 'sequelize';
 import bcrypt from 'bcryptjs';
-import { type IUser, type IUserRaw, type IUserFull, Role, RestaurantRole } from './../types';
+import { type IUser, type IUserRaw, type IUserFull, Role, RestaurantRole, type IUserProfile, IUserProfileRaw } from './../types';
 require('dotenv').config();
 
 const rootUser:IUserFull = {
@@ -141,13 +141,32 @@ export class UserService {
     });
   }
 
-  public addUserToRestaurant(userId:number, restaurantId:number, userRole:RestaurantRole):Promise<void> {
+  public addUserToRestaurant(userId:number, restaurantId:number, userProfile:IUserProfileRaw):Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      Promise.all([
-        database.models.userProfile.create({userId, restaurantId, role: userRole}),
-        database.models.UserRestaurant.create({userId, restaurantId})
-      ]).then(() => {
-        resolve();
+      database.models.UserRestaurant.findOne({
+        where: { userId, restaurantId }
+      }).then((result) => {
+        if (result) {
+          reject('already added');
+        } else {
+          Promise.all([
+            database.models.userProfile.create<Model<IUserProfileRaw>>({
+              userId, 
+              restaurantId, 
+              role: userProfile.role,
+              img: userProfile.img,
+              gender: userProfile.gender,
+              name: userProfile.name,
+              surname: userProfile.surname,
+              birthday: userProfile.birthday
+            }),
+            database.models.UserRestaurant.create({userId, restaurantId})
+          ]).then(() => {
+            resolve();
+          }).catch(err => {
+            reject(err);
+          });
+        }
       }).catch(err => {
         reject(err);
       });
