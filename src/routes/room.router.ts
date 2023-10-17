@@ -24,6 +24,7 @@ router.post('/:id/tables',
   validateBody(['people']).optional().isNumeric(),
   checkValidation,
   permissionMiddleware([]),
+  restaurantPermissionMiddleware([]),
   tryTo(roomsController.createTable, 'roomsController.createTable')
 );
 

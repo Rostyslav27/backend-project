@@ -50,7 +50,6 @@ class RestaurantsController {
     });
   }
 
-
   public async getReservations(req:Request, res:Response) {
     const restaurantId:number = +req.params.id;
     
