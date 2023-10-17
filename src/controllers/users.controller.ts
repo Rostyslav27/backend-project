@@ -31,13 +31,11 @@ class UsersController {
   public async auth(req:Request, res:Response) {
     const reqUser:User = req.body.reqUser;
     const userInfo = reqUser.getInfo();
-    const userProfilesMap:{[key:string]: IUserProfile} = Object.fromEntries(userInfo.profiles.map(profile => [profile.restaurantId, profile]));
-    const normalizedUserInfo:IUserFull = Object.assign({...userInfo}, { restaurants: [], profiles: [] });
+    const normalizedUserInfo:IUserFull = Object.assign({...userInfo}, { profiles: [] });
 
-    userInfo.restaurants.forEach(restaurant => {
-      if (restaurant.organization && !restaurant.organization.blocked && userProfilesMap[restaurant.id]) {
-        normalizedUserInfo.restaurants.push(restaurant);
-        normalizedUserInfo.profiles.push(userProfilesMap[restaurant.id]);
+    userInfo.profiles.forEach(profile => {
+      if (profile.restaurant && profile.restaurant.organization && !profile.restaurant.organization.blocked) {
+        normalizedUserInfo.profiles.push(profile);
       }
     });
     

@@ -8,10 +8,10 @@ export interface IUser {
   birthday?: string,
   gender?: string,
   img?: string,
+  profiles?: IUserProfile[],
 }
 
 export interface IUserFull extends IUser {
-  restaurants: IRestaurantExpanded[],
   profiles: IUserProfile[],
 }
 
@@ -33,6 +33,7 @@ export interface IUserProfile {
   img?: string,
   role: RestaurantRole,
   restaurantId?: number,
+  restaurant?: IRestaurantExpanded
   userId?: number,
   note?: string,
   phone?: string,
@@ -73,7 +74,11 @@ export interface IRestaurant {
   country?: string,
   city?: string,
   address?: string,
-  organizationId?: number
+  organizationId?: number,
+  rooms?: IRoomFull[],
+  clients?: IClientFull[],
+  organization?: IOrganization,
+  profiles?: IUserProfile[]
 }
 
 export interface IRestaurantExpanded extends IRestaurant {
@@ -84,7 +89,7 @@ export interface IRestaurantFull extends IRestaurant  {
   rooms: IRoomFull[],
   clients: IClientFull[],
   organization?: IOrganization,
-  users: IUser[]
+  profiles: IUserProfile[]
 }
 
 export interface IRestaurantRaw extends Omit<IRestaurant, 'id'> {

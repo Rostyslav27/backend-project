@@ -1,6 +1,6 @@
 
-import database, { RestaurantOrganization, UserProfileUser, Restaurant } from './../database';
-import { Model } from 'sequelize';
+import database, { RestaurantOrganization, UserProfileUser, Restaurant, UserProfileRestaurant } from './../database';
+import { Model, where } from 'sequelize';
 import bcrypt from 'bcryptjs';
 import { type IUser, type IUserRaw, type IUserFull, Role, RestaurantRole, type IUserProfile, IUserProfileRaw } from './../types';
 require('dotenv').config();
@@ -11,7 +11,6 @@ const rootUser:IUserFull = {
   "email": "roctik4x@gmail.com",
   "role": "admin" as Role,
   "profiles": [],
-  "restaurants": [],
   "password": "$2b$08$JfJYSnXkDwELzNeMdBo30.wGaNiPyZqEJRPLEGuILoN38PP3j7XN6"
 };
 
@@ -22,20 +21,20 @@ export class UserService {
         resolve(rootUser);
       } else {
         database.models.user.findByPk<Model<IUserFull>>(id, { 
-          include: [ 
-            { 
-              model: Restaurant, 
-              attributes: {exclude: ['createdAt', 'updatedAt', 'UserRestaurant']},
-              include: [
-                {
-                  association: RestaurantOrganization,
-                  attributes: {exclude: ['createdAt', 'updatedAt']},
-                }
-              ] 
-            }, 
+          include: [
             { 
               association: UserProfileUser,
               attributes: {exclude: ['createdAt', 'updatedAt']},
+              include: [{ 
+                association: UserProfileRestaurant, 
+                attributes: {exclude: ['createdAt', 'updatedAt']},
+                include: [
+                  {
+                    association: RestaurantOrganization,
+                    attributes: {exclude: ['createdAt', 'updatedAt']},
+                  }
+                ] 
+              }]
             } 
           ],
           attributes: {exclude: ['createdAt', 'updatedAt']},
@@ -58,20 +57,20 @@ export class UserService {
     } else {
       return new Promise<IUserFull>((resolve, reject) => {
         database.models.user.findOne({ where: { email }, 
-          include: [ 
-            { 
-              model: Restaurant, 
-              attributes: {exclude: ['createdAt', 'updatedAt']},
-              include: [
-                {
-                  association: RestaurantOrganization,
-                  attributes: {exclude: ['createdAt', 'updatedAt']},
-                }
-              ] 
-            }, 
+          include: [
             { 
               association: UserProfileUser,
               attributes: {exclude: ['createdAt', 'updatedAt']},
+              include: [{ 
+                association: UserProfileRestaurant, 
+                attributes: {exclude: ['createdAt', 'updatedAt']},
+                include: [
+                  {
+                    association: RestaurantOrganization,
+                    attributes: {exclude: ['createdAt', 'updatedAt']},
+                  }
+                ] 
+              }]
             } 
           ],
           attributes: {exclude: ['createdAt', 'updatedAt']},
@@ -82,6 +81,7 @@ export class UserService {
             reject('user not found');
           }
         }).catch(err => {
+          console.error(err)
           reject(err);
         });
       });
@@ -141,29 +141,26 @@ export class UserService {
     });
   }
 
-  public addUserToRestaurant(userId:number, restaurantId:number, userProfile:IUserProfileRaw):Promise<void> {
+  public createUserProfile(userId:number, restaurantId:number, userProfile:IUserProfileRaw):Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      database.models.UserRestaurant.findOne({
+      database.models.userProfile.findOne({
         where: { userId, restaurantId }
       }).then((result) => {
         if (result) {
           reject('already added');
         } else {
-          Promise.all([
-            database.models.userProfile.create<Model<IUserProfileRaw>>({
-              userId, 
-              restaurantId, 
-              role: userProfile.role,
-              img: userProfile.img,
-              gender: userProfile.gender,
-              name: userProfile.name,
-              surname: userProfile.surname,
-              birthday: userProfile.birthday,
-              note: userProfile.note,
-              phone: userProfile.phone
-            }),
-            database.models.UserRestaurant.create({userId, restaurantId})
-          ]).then(() => {
+          database.models.userProfile.create<Model<IUserProfileRaw>>({
+            userId, 
+            restaurantId, 
+            role: userProfile.role,
+            img: userProfile.img,
+            gender: userProfile.gender,
+            name: userProfile.name,
+            surname: userProfile.surname,
+            birthday: userProfile.birthday,
+            note: userProfile.note,
+            phone: userProfile.phone
+          }).then(() => {
             resolve();
           }).catch(err => {
             reject(err);
@@ -175,28 +172,56 @@ export class UserService {
     });
   }
 
-  public removeUserFromRestaurant(userId:number, restaurantId:number):Promise<void> {
+  public editUserProfile(userId:number, restaurantId:number, userProfile:IUserProfileRaw):Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      database.models.UserRestaurant.findOne({
-        where: { userId, restaurantId }
-      }).then((result) => {
-        if (result) {
-          Promise.all([
-            database.models.userProfile.destroy({where: { userId, restaurantId }}),
-            result.destroy()
-          ]).then(() => {
-            resolve();
-          }).catch(err => {
-            reject(err);
-          });
-        } else {
-          reject('user not added')
-        }
+      database.models.userProfile.update<Model<IUserProfileRaw>>({
+        userId, 
+        restaurantId, 
+        role: userProfile.role,
+        img: userProfile.img,
+        gender: userProfile.gender,
+        name: userProfile.name,
+        surname: userProfile.surname,
+        birthday: userProfile.birthday,
+        note: userProfile.note,
+        phone: userProfile.phone
+      }, { where: { userId, restaurantId } } ).then(() => {
+        resolve();
       }).catch(err => {
         reject(err);
       });
     });
   }
+
+  public deleteUserProfile(userId:number, restaurantId:number):Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      database.models.userProfile.destroy({
+        where: { userId, restaurantId }
+      }).then(() => {
+        resolve();
+      }).catch(err => {
+        reject(err);
+      });
+    });
+  }
+
+  // public editUserProfile(userId:number, restaurantId:number, userProfile:IUserProfileRaw):Promise<void> {
+  //   return new Promise<void>((resolve, reject) => {
+  //     database.models.userProfile.update<Model<IUserProfileRaw>>({
+  //       userId,
+  //       role: userProfile.role,
+  //       img: userProfile.img,
+  //       gender: userProfile.gender,
+  //       name: userProfile.name,
+  //       surname: userProfile.surname,
+  //       birthday: userProfile.birthday,
+  //       note: userProfile.note,
+  //       phone: userProfile.phone
+  //     }, {
+  //       where: { userId, restaurantId }
+  //     }),
+  //   });
+  // }
 }
 
 export const userService = new UserService();

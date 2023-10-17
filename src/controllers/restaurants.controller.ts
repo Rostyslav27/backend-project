@@ -87,11 +87,11 @@ class RestaurantsController {
 
     userService.createOrGetFullUserByEmail({ email, role: Role.User, password: String(Math.random()) }).then((userInfo) => {
       const user = new User(userInfo);
-      restaurant.addUser(userInfo.id, {
+      restaurant.addProfile(userInfo.id, {
         role, name, surname, phone, birthday, gender, note
       }).then(() => {
         user.sync().then(() => {
-          res.json(user.getEmployeeInfo(restaurant.getId()));
+          res.json(user.getProfile(restaurant.getId()));
         }).catch(err => {
           res.status(500).json(Errors.Unknown);
         });
@@ -107,16 +107,11 @@ class RestaurantsController {
     const restaurant:Restaurant = req.body.reqRestaurant;
     const userId = +req.params.userId;
 
-    userService.getFullUserById(userId).then((userInfo) => {
-      const user = new User(userInfo);
-      restaurant.removeUser(user.getId()).then(() => {
-        res.json('success');
-      }).catch(err => {
-        res.status(400).json('failed to remove user from the restaurant');
-      })
-    }).catch((err) => {
-      res.status(500).json(Errors.Unknown);
-    });
+    restaurant.removeProfile(userId).then(() => {
+      res.json('success');
+    }).catch(err => {
+      res.status(400).json('failed to remove user from the restaurant');
+    })
   }
 }
 

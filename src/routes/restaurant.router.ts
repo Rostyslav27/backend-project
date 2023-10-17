@@ -32,19 +32,13 @@ router.get('/:id/reservations',
   tryTo(restaurantsController.getReservations, 'restaurantsController.getReservations')
 );
 
-router.post('/:id/users',
+router.post('/:id/profiles',
   validateBody(['email']).isEmail().notEmpty(),
   validateBody(['role']).isAlpha().notEmpty(),
   checkValidation,
   permissionMiddleware([]),
   restaurantPermissionMiddleware([]),
   tryTo(restaurantsController.createEmployee, 'restaurantsController.createEmployee')
-);
-
-router.delete('/:id/users/:userId',
-  permissionMiddleware([]),
-  restaurantPermissionMiddleware([]),
-  tryTo(restaurantsController.deleteEmployee, 'restaurantsController.deleteEmployee')
 );
 
 export default router;

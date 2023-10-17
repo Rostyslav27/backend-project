@@ -1,5 +1,5 @@
 
-import database, { RestaurantRoom, RoomTable, TableReservation, RestaurantOrganization, Reservation, RestaurantClient, Room, Table, User, UserProfileUser } from './../database';
+import database, { RestaurantRoom, RoomTable, TableReservation, RestaurantOrganization, Reservation, RestaurantClient, Room, Table, User, RestaurantUserProfile, ProfileUserUser } from './../database';
 import { Model } from 'sequelize';
 import { type IRestaurant, type IRestaurantRaw, type IRestaurantFull } from './../types';
 require('dotenv').config();
@@ -23,13 +23,11 @@ export class RestaurantService {
           association: RestaurantOrganization,
           attributes: {exclude: ['createdAt', 'updatedAt']},
         }, {  
-          model: User,
-          attributes: {exclude: ['createdAt', 'updatedAt', 'password']},
+          association: RestaurantUserProfile,
+          attributes: {exclude: ['createdAt', 'updatedAt']},
           include: [{
-            association: UserProfileUser,
-            where: {
-              restaurantId: id,
-            }
+            association: ProfileUserUser,
+            attributes: {exclude: ['createdAt', 'updatedAt', 'password']},
           }]
         }, {
           association: RestaurantClient,
@@ -97,6 +95,30 @@ export class RestaurantService {
         include: [{ 
           association: RestaurantClient,
           as: 'clients',
+          required: true,
+          where: { id },
+        }]
+      }).then((restaurants) => {
+        if (restaurants.length) {
+          resolve(restaurants[0].toJSON());
+        } else {
+          reject('No restaurant')
+        }
+      }).catch(err => {
+        reject(err);
+      })
+    });
+  }
+
+  public getRestaurantByProfileId(id:number):Promise<IRestaurant> {
+    return new Promise<IRestaurant>((resolve, reject) => {
+      database.models.restaurant.findAll<Model<IRestaurant>>({
+        where: {
+          '$profiles.id$' : id
+        },
+        include: [{ 
+          association: ProfileUserUser,
+          as: 'profiles',
           required: true,
           where: { id },
         }]
@@ -182,7 +204,7 @@ export class RestaurantService {
       }).then((restaurant) => {
         if (restaurant) {
           const rawRestaurant:IRestaurant = restaurant.toJSON() as IRestaurant;
-          resolve(Object.assign(rawRestaurant, { rooms: [], clients: [], users: [] }) satisfies IRestaurantFull);
+          resolve(Object.assign(rawRestaurant, { rooms: [], clients: [], profiles: [] }) satisfies IRestaurantFull);
         } else { 
           reject('Restaurant was not created')
         }

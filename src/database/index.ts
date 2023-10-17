@@ -61,37 +61,18 @@ Reservation.init(ReservationFields, { sequelize,
   tableName: 'reservations' 
 });
 
-const UserRestaurantModel = sequelize.define('UserRestaurant', {
-  restaurantId: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: Restaurant,
-      key: 'id'
-    }
-  },
-  userId: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: User,
-      key: 'id'
-    }
-  }
-}, { tableName: 'UserRestaurants' });
-
 const TagClientModel = sequelize.define('TagClient', {}, { tableName: 'TagClients' });
 
 User.hasOne(Organization, { as: 'owner' });
 const OrganizationOwner = Organization.belongsTo(User, { as: 'owner' });
 
 const UserProfileUser = User.hasMany(UserProfile, { as: 'profiles' });
-UserProfile.belongsTo(User, { as: 'user' });
-UserProfile.belongsTo(Restaurant, { as: 'restaurant' });
+const ProfileUserUser = UserProfile.belongsTo(User, { as: 'user' });
+const UserProfileRestaurant = UserProfile.belongsTo(Restaurant, { as: 'restaurant' });
+const RestaurantUserProfile = Restaurant.hasMany(UserProfile, { as: 'profiles' });
 
 const OrganizationRestaurants = Organization.hasMany(Restaurant, { as: 'restaurants' });
 const RestaurantOrganization = Restaurant.belongsTo(Organization);
-
-const RestaurantUser = User.belongsToMany(Restaurant, { through: UserRestaurantModel });
-const UserRestaurant = Restaurant.belongsToMany(User, { through: UserRestaurantModel });
 
 const RoomRestaurant = Room.belongsTo(Restaurant);
 const RestaurantRoom = Restaurant.hasMany(Room, { as: 'rooms' });
@@ -120,9 +101,7 @@ export {
   Table,
   OrganizationOwner, 
   OrganizationRestaurants, 
-  RestaurantOrganization, 
-  UserRestaurant, 
-  RestaurantUser, 
+  RestaurantOrganization,
   UserProfile, 
   UserProfileUser, 
   RoomRestaurant, 
@@ -136,7 +115,10 @@ export {
   ReservationClient,
   RestaurantClient,
   ClientRestaurant,
-  Reservation
+  Reservation,
+  UserProfileRestaurant,
+  RestaurantUserProfile,
+  ProfileUserUser
 }
 
 export default sequelize;

@@ -1,4 +1,4 @@
-import { type IUserFull, type IUserRaw, Role, RestaurantRole } from './../types';
+import { type IUserFull, type IUserRaw, Role, RestaurantRole, type IUserProfile, type IUser } from './../types';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { userService } from './../services/user.service';
@@ -17,11 +17,14 @@ export class User {
     return Object.assign({...this._user}, { password: '*' });
   }
 
-  public getEmployeeInfo(restaurantId:number):IUserFull {
-    const user = this.getInfo();
-    user.restaurants = [];
-    user.profiles.filter(profile => profile.restaurantId === restaurantId);
-    return user;
+  public getProfile(restaurantId:number):IUserProfile | undefined {
+    const userProfile:IUserProfile | undefined = this._user.profiles.find(profile => profile.restaurant && profile.restaurant.id === restaurantId);
+    const user:IUser = {...this.getInfo()} as IUser;
+
+    delete user.profiles;
+    delete userProfile?.restaurant
+
+    return userProfile ? Object.assign(userProfile, { user }) satisfies IUserProfile : undefined;
   }
 
   public getId():number {

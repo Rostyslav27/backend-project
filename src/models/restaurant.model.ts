@@ -8,8 +8,8 @@ export class Restaurant {
   private _restaurant: IRestaurantFull;
 
   constructor(restaurant:IRestaurant | IRestaurantFull) {
-    if ('rooms' in restaurant) {
-      this._restaurant = restaurant;
+    if (('rooms' in restaurant) && ('profiles' in restaurant) && ('clients' in restaurant)) {
+      this._restaurant = restaurant as IRestaurantFull;
     } else {
       this._restaurant = this.restaurantToFullRestaurant(restaurant);
     }
@@ -20,7 +20,7 @@ export class Restaurant {
   }
 
   public restaurantToFullRestaurant(restaurant:IRestaurant):IRestaurantFull {
-    return Object.assign(restaurant, { rooms: [], clients: [], users: []}) satisfies IRestaurantFull
+    return Object.assign(restaurant, { rooms: [], clients: [], profiles: []}) satisfies IRestaurantFull
   }
 
   public getReservations():IReservation[] {
@@ -55,12 +55,12 @@ export class Restaurant {
     return restaurantService.setOrganization(this._restaurant.id, organizationId);
   }
 
-  public addUser(userId:number, userProfile:IUserProfileRaw):Promise<void> {
-    return userService.addUserToRestaurant(userId, this._restaurant.id, userProfile);
+  public addProfile(userId:number, userProfile:IUserProfileRaw):Promise<void> {
+    return userService.createUserProfile(userId, this._restaurant.id, userProfile);
   }
 
-  public removeUser(userId:number):Promise<void> {
-    return userService.removeUserFromRestaurant(userId, this._restaurant.id);
+  public removeProfile(userId:number):Promise<void> {
+    return userService.deleteUserProfile(userId, this._restaurant.id);
   }
 
   public addRoom(room:IRoomRaw):Promise<IRoom> {
