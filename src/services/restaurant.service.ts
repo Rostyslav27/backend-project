@@ -55,6 +55,30 @@ export class RestaurantService {
     });
   }
 
+  public getRestaurantByRoomId(id:number):Promise<IRestaurant> {
+    return new Promise<IRestaurant>((resolve, reject) => {
+      database.models.restaurant.findAll<Model<IRestaurant>>({
+        where: {
+          '$rooms.id$' : id
+        },
+        include: [{ 
+          model: Room,
+          as: 'rooms',
+          required: true,
+          where: { id },
+        }]
+      }).then((restaurants) => {
+        if (restaurants.length) {
+          resolve(restaurants[0].toJSON());
+        } else {
+          reject('No restaurant')
+        }
+      }).catch(err => {
+        reject(err);
+      })
+    });
+  }
+
   public getRestaurantByTableId(id:number):Promise<IRestaurant> {
     return new Promise<IRestaurant>((resolve, reject) => {
       database.models.restaurant.findAll<Model<IRestaurant>>({
