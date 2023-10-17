@@ -1,6 +1,6 @@
 import { userService } from './../services/user.service';
 import { restaurantService } from './../services/restaurant.service';
-import { type IRestaurant, type IReservation, RestaurantRole, type IRoomRaw, type IRoom, IRestaurantFull } from './../types';
+import { type IRestaurant, type IReservation, RestaurantRole, type IRoomRaw, type IRoom, IRestaurantFull, IUserProfile, IUserProfileRaw } from './../types';
 import { roomService } from './../services/room.service';
 require('dotenv').config();
 
@@ -55,8 +55,8 @@ export class Restaurant {
     return restaurantService.setOrganization(this._restaurant.id, organizationId);
   }
 
-  public addUser(userId:number, userRole:RestaurantRole):Promise<void> {
-    return userService.addUserToRestaurant(userId, this._restaurant.id, { role: userRole });
+  public addUser(userId:number, userRole:IUserProfileRaw):Promise<void> {
+    return userService.addUserToRestaurant(userId, this._restaurant.id, userRole);
   }
 
   public addRoom(room:IRoomRaw):Promise<IRoom> {

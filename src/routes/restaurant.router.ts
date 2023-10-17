@@ -32,4 +32,13 @@ router.get('/:id/reservations',
   tryTo(restaurantsController.getReservations, 'restaurantsController.getReservations')
 );
 
+router.post('/:id/users',
+  validateBody(['email']).isEmail().notEmpty(),
+  validateBody(['role']).isAlpha().notEmpty(),
+  checkValidation,
+  permissionMiddleware([]),
+  restaurantPermissionMiddleware([]),
+  tryTo(restaurantsController.createEmployee, 'restaurantsController.createEmployee')
+);
+
 export default router;

@@ -17,6 +17,13 @@ export class User {
     return Object.assign({...this._user}, { password: '*' });
   }
 
+  public getEmployeeInfo(restaurantId:number):IUserFull {
+    const user = this.getInfo();
+    user.restaurants = [];
+    user.profiles.filter(profile => profile.restaurantId === restaurantId);
+    return user;
+  }
+
   public getId():number {
     return this._user.id;
   }
@@ -40,6 +47,17 @@ export class User {
     } else {
       return '';
     }
+  }
+
+  public sync():Promise<IUserFull> {
+    return new Promise((resolve, reject) => {
+      userService.getFullUserById(this._user.id).then((userInfo) => {
+        this._user = userInfo;
+        resolve(this.getInfo());
+      }).catch(err => {
+        reject(err);
+      })
+    });
   }
 
   public static hashPassword(user:IUserRaw):IUserRaw {
