@@ -41,4 +41,10 @@ router.post('/:id/users',
   tryTo(restaurantsController.createEmployee, 'restaurantsController.createEmployee')
 );
 
+router.delete('/:id/users/:userId',
+  permissionMiddleware([]),
+  restaurantPermissionMiddleware([]),
+  tryTo(restaurantsController.deleteEmployee, 'restaurantsController.deleteEmployee')
+);
+
 export default router;

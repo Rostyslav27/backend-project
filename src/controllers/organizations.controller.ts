@@ -53,7 +53,7 @@ class OrganizationsController {
       Promise.all([
         organization.setOwner(user.getId()),
         restaurant.setOrganization(restaurant.getId()),
-        restaurant.addUser(user.getId(), RestaurantRole.Owner),
+        restaurant.addUser(user.getId(), { role: RestaurantRole.Owner }),
       ]).then(() => {
         organizationService.getFullOrganizationById(organization.getId()).then(organization => {
           res.json(organization);

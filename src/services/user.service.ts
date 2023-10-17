@@ -174,6 +174,29 @@ export class UserService {
       });
     });
   }
+
+  public removeUserFromRestaurant(userId:number, restaurantId:number):Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      database.models.UserRestaurant.findOne({
+        where: { userId, restaurantId }
+      }).then((result) => {
+        if (result) {
+          Promise.all([
+            database.models.userProfile.destroy({where: { userId, restaurantId }}),
+            result.destroy()
+          ]).then(() => {
+            resolve();
+          }).catch(err => {
+            reject(err);
+          });
+        } else {
+          reject('user not added')
+        }
+      }).catch(err => {
+        reject(err);
+      });
+    });
+  }
 }
 
 export const userService = new UserService();

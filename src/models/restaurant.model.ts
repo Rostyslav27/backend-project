@@ -55,8 +55,12 @@ export class Restaurant {
     return restaurantService.setOrganization(this._restaurant.id, organizationId);
   }
 
-  public addUser(userId:number, userRole:IUserProfileRaw):Promise<void> {
-    return userService.addUserToRestaurant(userId, this._restaurant.id, userRole);
+  public addUser(userId:number, userProfile:IUserProfileRaw):Promise<void> {
+    return userService.addUserToRestaurant(userId, this._restaurant.id, userProfile);
+  }
+
+  public removeUser(userId:number):Promise<void> {
+    return userService.removeUserFromRestaurant(userId, this._restaurant.id);
   }
 
   public addRoom(room:IRoomRaw):Promise<IRoom> {

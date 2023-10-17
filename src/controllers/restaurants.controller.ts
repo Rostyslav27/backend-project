@@ -102,6 +102,22 @@ class RestaurantsController {
       res.status(500).json(Errors.Unknown);
     });
   }
+
+  public async deleteEmployee(req:Request, res:Response) {
+    const restaurant:Restaurant = req.body.reqRestaurant;
+    const userId = +req.params.userId;
+
+    userService.getFullUserById(userId).then((userInfo) => {
+      const user = new User(userInfo);
+      restaurant.removeUser(user.getId()).then(() => {
+        res.json('success');
+      }).catch(err => {
+        res.status(400).json('failed to remove user from the restaurant');
+      })
+    }).catch((err) => {
+      res.status(500).json(Errors.Unknown);
+    });
+  }
 }
 
 export const restaurantsController = new RestaurantsController();
