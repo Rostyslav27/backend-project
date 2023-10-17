@@ -5,10 +5,44 @@ import { type Request, type Response } from 'express';
 import { Errors } from '../types';
 import { reservationService } from './../services/reservation.service';
 import { clientService } from './../services/client.service';
-import { restaurantService } from './../services/restaurant.service';
+import { tableService } from './../services/table.service';
 import { Restaurant } from './../models/restaurant.model';
+import { Table } from './../models/table.model';
 
 class TablesController {
+  public async editTable(req:Request, res:Response) {
+    const tableId:number = +req.params.id;
+    const name:string = String(req.body.name || '');
+    const people:number = req.body.people;
+
+    tableService.getFullTableById(tableId).then((tableInfo) => {
+      const table = new Table(tableInfo);
+
+      table.edit({
+        name: name || tableInfo.name,
+        people: people || tableInfo.people,
+      }).then((tableInfo) => {
+        res.json(tableInfo);
+      }).catch(err => {
+        res.status(500).json(Errors.Unknown);
+      });
+    }).catch(err => {
+      console.error(err);
+      res.status(403).json(Errors.NotExist);
+    });
+  }
+
+  public async deleteTable(req:Request, res:Response) {
+    const tableId:number = +req.params.id;
+
+    tableService.deleteTable(tableId).then(() => {
+      res.json('success');
+    }).catch(err => {
+      console.error(err);
+      res.status(403).json(Errors.Exist);
+    });
+  }
+
   public async createReservation(req:Request, res:Response) {
     const restaurant:Restaurant = req.body.reqRestaurant;
     const tableId:number = +req.params.id;

@@ -8,6 +8,20 @@ import { tryTo } from './../middleware/try.middleware';
 import { tablesController } from './../controllers/tables.controller';
 const router = express.Router();
 
+router.put('/:id', 
+  validateBody(['people']).optional().isNumeric(),
+  checkValidation,
+  permissionMiddleware([]),
+  restaurantPermissionMiddleware([]),
+  tryTo(tablesController.editTable, 'tablesController.editTable')
+);
+
+router.delete('/:id', 
+  permissionMiddleware([]),
+  restaurantPermissionMiddleware([]),
+  tryTo(tablesController.deleteTable, 'tablesController.deleteTable')
+);
+
 router.post('/:id/reservations', 
   validateBody(['startTime', 'endTime']).notEmpty().isNumeric(),
   validateBody(['tableId', 'clientId', 'people']).optional().isNumeric(),

@@ -8,6 +8,8 @@ import { roomsController } from './../controllers/rooms.controller';
 const router = express.Router();
 
 router.post('/:id/tables',
+  validateBody(['people']).optional().isNumeric(),
+  checkValidation,
   permissionMiddleware([]),
   tryTo(roomsController.createTable, 'roomsController.createTable')
 );

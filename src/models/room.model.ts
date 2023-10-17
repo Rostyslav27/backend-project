@@ -1,4 +1,4 @@
-import { ITableRaw, type IRoom, type ITable } from './../types';
+import { ITableRaw, type IRoom, type ITableFull } from './../types';
 import { roomService } from './../services/room.service';
 import { tableService } from './../services/table.service';
 require('dotenv').config();
@@ -18,7 +18,7 @@ export class Room {
     return this._room.id;
   }
 
-  public addTable(table:ITableRaw):Promise<ITable> {
+  public addTable(table:ITableRaw):Promise<ITableFull> {
     return tableService.createTable(table, this._room.id);
   }
 }
