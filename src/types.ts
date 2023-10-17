@@ -34,7 +34,8 @@ export interface IUserProfile {
   role: RestaurantRole,
   restaurantId?: number,
   userId?: number,
-  note?: string
+  note?: string,
+  phone?: string,
 }
 
 export interface IUserProfileRaw extends Omit<IUserProfile, 'id'> {

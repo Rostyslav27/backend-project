@@ -9,6 +9,7 @@ export class UserProfile extends Model<InferAttributes<UserProfile>, InferCreati
   declare gender?: string | undefined;
   declare img?: string | undefined;
   declare note?: string | undefined;
+  declare phone?: string | undefined;
 }
 
 export const userProfileFields = {
@@ -38,6 +39,10 @@ export const userProfileFields = {
   },
   note: {
     type: DataTypes.TEXT,
+    allowNull: true
+  },
+  phone: {
+    type: DataTypes.STRING,
     allowNull: true
   },
 };

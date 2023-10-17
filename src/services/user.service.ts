@@ -159,7 +159,8 @@ export class UserService {
               name: userProfile.name,
               surname: userProfile.surname,
               birthday: userProfile.birthday,
-              note: userProfile.note
+              note: userProfile.note,
+              phone: userProfile.phone
             }),
             database.models.UserRestaurant.create({userId, restaurantId})
           ]).then(() => {
