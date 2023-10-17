@@ -49,7 +49,7 @@ export class TableService {
         if (count[0] > 0) {
           resolve();
         } else {
-          reject('tableId was not updated');
+          reject('table was not updated');
         }
       }).catch(err => {
         reject(err);
