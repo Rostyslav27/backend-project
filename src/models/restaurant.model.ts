@@ -11,12 +11,16 @@ export class Restaurant {
     if ('rooms' in restaurant) {
       this._restaurant = restaurant;
     } else {
-      this._restaurant = Object.assign(restaurant, { rooms: [], clients: [] }) satisfies IRestaurantFull
+      this._restaurant = this.restaurantToFullRestaurant(restaurant);
     }
   }
 
   public getInfo():IRestaurantFull {
     return this._restaurant;
+  }
+
+  public restaurantToFullRestaurant(restaurant:IRestaurant):IRestaurantFull {
+    return Object.assign(restaurant, { rooms: [], clients: [], users: []}) satisfies IRestaurantFull
   }
 
   public getReservations():IReservation[] {

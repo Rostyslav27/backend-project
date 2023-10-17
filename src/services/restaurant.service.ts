@@ -1,5 +1,5 @@
 
-import database, { RestaurantRoom, RoomTable, TableReservation, RestaurantOrganization, Reservation, RestaurantClient, Room, Table } from './../database';
+import database, { RestaurantRoom, RoomTable, TableReservation, RestaurantOrganization, Reservation, RestaurantClient, Room, Table, User } from './../database';
 import { Model } from 'sequelize';
 import { type IRestaurant, type IRestaurantRaw, type IRestaurantFull } from './../types';
 require('dotenv').config();
@@ -22,6 +22,9 @@ export class RestaurantService {
         }, {  
           association: RestaurantOrganization,
           attributes: {exclude: ['createdAt', 'updatedAt']},
+        }, {  
+          model: User,
+          attributes: {exclude: ['createdAt', 'updatedAt', 'password']},
         }, {
           association: RestaurantClient,
           attributes: {exclude: ['createdAt', 'updatedAt']},
@@ -149,7 +152,7 @@ export class RestaurantService {
       }).then((restaurant) => {
         if (restaurant) {
           const rawRestaurant:IRestaurant = restaurant.toJSON() as IRestaurant;
-          resolve(Object.assign(rawRestaurant, { rooms: [], clients: [] }) as IRestaurantFull);
+          resolve(Object.assign(rawRestaurant, { rooms: [], clients: [], users: [] }) satisfies IRestaurantFull);
         } else { 
           reject('Restaurant was not created')
         }
