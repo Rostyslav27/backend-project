@@ -88,6 +88,30 @@ export class RestaurantService {
     });
   }
 
+  public getRestaurantByClientId(id:number):Promise<IRestaurant> {
+    return new Promise<IRestaurant>((resolve, reject) => {
+      database.models.restaurant.findAll<Model<IRestaurant>>({
+        where: {
+          '$clients.id$' : id
+        },
+        include: [{ 
+          association: RestaurantClient,
+          as: 'clients',
+          required: true,
+          where: { id },
+        }]
+      }).then((restaurants) => {
+        if (restaurants.length) {
+          resolve(restaurants[0].toJSON());
+        } else {
+          reject('No restaurant')
+        }
+      }).catch(err => {
+        reject(err);
+      })
+    });
+  }
+
   public getRestaurantByTableId(id:number):Promise<IRestaurant> {
     return new Promise<IRestaurant>((resolve, reject) => {
       database.models.restaurant.findAll<Model<IRestaurant>>({

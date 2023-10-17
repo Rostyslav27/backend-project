@@ -33,6 +33,10 @@ export const restaurantPermissionMiddleware = (roles:RestaurantRole[], options:{
         getRestaurantMethod = restaurantService.getRestaurantById(+req.params.id)
       }
 
+      if (req.baseUrl === '/clients') {
+        getRestaurantMethod = restaurantService.getRestaurantByClientId(+req.params.id)
+      }
+
       if (getRestaurantMethod) {
         getRestaurantMethod.then((restaurantInfo) => {
           const restaurant = new Restaurant(restaurantInfo);
