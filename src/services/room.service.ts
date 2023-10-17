@@ -27,10 +27,40 @@ export class RoomService {
       }).then((room) => {
         if (room) {
           const exactRoom:IRoom = room.toJSON() as IRoom;
-          resolve(Object.assign(exactRoom, { tables: [] }));
+          resolve(Object.assign(exactRoom, { tables: [] }) satisfies IRoomFull);
         } else { 
           reject('Room was not created')
         }
+      }).catch(err => {
+        reject(err);
+      });
+    });
+  }
+
+  public editRoom(roomId:number, room:IRoomRaw):Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      database.models.room.update<Model<IRoomRaw>>({
+        name: room.name,
+      }, {
+        where: { id: roomId }
+      }).then((count) => {
+        if (count[0] > 0) {
+          resolve();
+        } else {
+          reject('room was not updated');
+        }
+      }).catch(err => {
+        reject(err);
+      });
+    });
+  }
+
+  public deleteRoom(roomId:number):Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      database.models.room.destroy({
+        where: { id: roomId }
+      }).then(() => {
+        resolve();
       }).catch(err => {
         reject(err);
       });
