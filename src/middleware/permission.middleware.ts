@@ -22,28 +22,32 @@ export const permissionMiddleware = (roles:Role[], options:{self?:boolean, autho
           if (!token || typeof token != 'string') {
             res.status(403).json(Errors.NotAuthorized);
           } else {
-            const userInfo = jwt.verify(token, jwtKey);
+            try {
+              const userInfo = jwt.verify(token, jwtKey);
 
-            if (typeof userInfo != 'string' && !!userInfo.id) {
-              userService.getFullUserById(+userInfo.id).then((userInfo) => {
-                const user = new User(userInfo);
-                let havePermission:boolean = user.hasPermisson(roles);
-                let selfPermission:boolean = !!(options.self && req.body.id === user.getId());
-                
-                if (havePermission || selfPermission) {
-                  req.body.reqUser = user;
-                  req.body.havePermission = havePermission;
-                  req.body.selfPermission = selfPermission;
-                  next();
-                } else {
-                  res.status(400).json(Errors.PermissionDenied);
-                }
-              }).catch((err) => {
-                res.status(400).json(Errors.NotAuthorized);
-              });
-                
-            } else {
-              res.status(400).json(Errors.InvalidRequest);
+              if (typeof userInfo != 'string' && !!userInfo.id) {
+                userService.getFullUserById(+userInfo.id).then((userInfo) => {
+                  const user = new User(userInfo);
+                  let havePermission:boolean = user.hasPermisson(roles);
+                  let selfPermission:boolean = !!(options.self && req.body.id === user.getId());
+                  
+                  if (havePermission || selfPermission) {
+                    req.body.reqUser = user;
+                    req.body.havePermission = havePermission;
+                    req.body.selfPermission = selfPermission;
+                    next();
+                  } else {
+                    res.status(400).json(Errors.PermissionDenied);
+                  }
+                }).catch((err) => {
+                  res.status(400).json(Errors.NotAuthorized);
+                });
+                  
+              } else {
+                res.status(400).json(Errors.InvalidRequest);
+              }
+            } catch {
+              res.status(400).json(Errors.NotAuthorized);
             }
           }
         } else {

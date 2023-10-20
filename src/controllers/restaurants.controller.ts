@@ -83,7 +83,7 @@ class RestaurantsController {
     const phone:string | undefined = String(req.body.phone || '') || undefined;
     const birthday:string | undefined = String(req.body.birthday || '') || undefined;
     const gender:string | undefined = String(req.body.gender || '') || undefined;
-    const note:string | undefined = String(req.body.gender || '') || undefined;
+    const note:string | undefined = String(req.body.note || '') || undefined;
 
     userService.createOrGetFullUserByEmail({ email, role: Role.User, password: String(Math.random()) }).then((userInfo) => {
       const user = new User(userInfo);
@@ -101,17 +101,6 @@ class RestaurantsController {
     }).catch((err) => {
       res.status(500).json(Errors.Unknown);
     });
-  }
-
-  public async deleteEmployee(req:Request, res:Response) {
-    const restaurant:Restaurant = req.body.reqRestaurant;
-    const userId = +req.params.userId;
-
-    restaurant.removeProfile(userId).then(() => {
-      res.json('success');
-    }).catch(err => {
-      res.status(400).json('failed to remove user from the restaurant');
-    })
   }
 }
 
