@@ -6,6 +6,7 @@ import roomRouter from './room.router';
 import tableRouter from './table.router';
 import clientRouter from './client.router';
 import reservationsRouter from './reservation.router';
+import profilesRouter from './profile.router';
 
 const router = express.Router();
 
@@ -16,5 +17,6 @@ router.use('/rooms', roomRouter);
 router.use('/tables', tableRouter);
 router.use('/clients', clientRouter);
 router.use('/reservations', reservationsRouter);
+router.use('/profiles', profilesRouter);
 
 export default router;

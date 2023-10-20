@@ -90,6 +90,35 @@ export class UserService {
     }
   }
 
+  public getUserByProfileId(profileId:number):Promise<IUser> {
+    return new Promise<IUserFull>((resolve, reject) => {
+      database.models.user.findAll({ 
+        where: {
+          '$profiles.id$' : profileId
+        }, 
+        include: [
+          { 
+            association: UserProfileUser,
+            as: 'profiles',
+            required: true,
+            where: { id:  profileId},
+            attributes: {exclude: ['createdAt', 'updatedAt']},
+          } 
+        ],
+        attributes: {exclude: ['createdAt', 'updatedAt']},
+      }).then((users) => {
+        if (users.length) {
+          resolve(users[0].toJSON());
+        } else {
+          reject('No restaurant')
+        }
+      }).catch(err => {
+        console.error(err)
+        reject(err);
+      });
+    });
+  }
+
   public createUser(user:IUserRaw):Promise<IUserFull> {
     return new Promise<IUserFull>((resolve, reject) => {
       database.models.user.create<Model<IUserRaw>>({
@@ -174,11 +203,10 @@ export class UserService {
     });
   }
 
-  public editUserProfile(userId:number, restaurantId:number, userProfile:IUserProfileRaw):Promise<void> {
+  public editUserProfile(profileId:number, userId:number | undefined, userProfile:IUserProfileRaw):Promise<void> {
     return new Promise<void>((resolve, reject) => {
       database.models.userProfile.update<Model<IUserProfileRaw>>({
         userId, 
-        restaurantId, 
         role: userProfile.role,
         img: userProfile.img,
         gender: userProfile.gender,
@@ -187,7 +215,7 @@ export class UserService {
         birthday: userProfile.birthday,
         note: userProfile.note,
         phone: userProfile.phone
-      }, { where: { userId, restaurantId } } ).then(() => {
+      }, { where: { id: profileId } } ).then(() => {
         resolve();
       }).catch(err => {
         reject(err);
@@ -195,10 +223,10 @@ export class UserService {
     });
   }
 
-  public deleteUserProfile(userId:number, restaurantId:number):Promise<void> {
+  public deleteUserProfile(profileId:number):Promise<void> {
     return new Promise<void>((resolve, reject) => {
       database.models.userProfile.destroy({
-        where: { userId, restaurantId }
+        where: { id: profileId }
       }).then(() => {
         resolve();
       }).catch(err => {
@@ -206,24 +234,6 @@ export class UserService {
       });
     });
   }
-
-  // public editUserProfile(userId:number, restaurantId:number, userProfile:IUserProfileRaw):Promise<void> {
-  //   return new Promise<void>((resolve, reject) => {
-  //     database.models.userProfile.update<Model<IUserProfileRaw>>({
-  //       userId,
-  //       role: userProfile.role,
-  //       img: userProfile.img,
-  //       gender: userProfile.gender,
-  //       name: userProfile.name,
-  //       surname: userProfile.surname,
-  //       birthday: userProfile.birthday,
-  //       note: userProfile.note,
-  //       phone: userProfile.phone
-  //     }, {
-  //       where: { userId, restaurantId }
-  //     }),
-  //   });
-  // }
 }
 
 export const userService = new UserService();

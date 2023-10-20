@@ -54,7 +54,7 @@ export const restaurantPermissionMiddleware = (roles:RestaurantRole[], options:{
           }
 
         }).catch(err => {
-          res.status(404).json('can not fint restaurant by the reservation');
+          res.status(404).json(Errors.NotExist);
         })
       } else {
         res.status(500).json('no method to get restaurant');

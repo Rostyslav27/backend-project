@@ -59,8 +59,12 @@ export class Restaurant {
     return userService.createUserProfile(userId, this._restaurant.id, userProfile);
   }
 
-  public removeProfile(userId:number):Promise<void> {
-    return userService.deleteUserProfile(userId, this._restaurant.id);
+  public editProfile(profileId:number, userId:number | undefined, userProfile:IUserProfileRaw):Promise<void> {
+    return userService.editUserProfile(profileId, userId, userProfile);
+  }
+
+  public removeProfile(profileId:number):Promise<void> {
+    return userService.deleteUserProfile(profileId);
   }
 
   public addRoom(room:IRoomRaw):Promise<IRoom> {

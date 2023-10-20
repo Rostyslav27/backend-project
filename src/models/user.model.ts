@@ -17,6 +17,10 @@ export class User {
     return Object.assign({...this._user}, { password: '*' });
   }
 
+  public static userToFullUser(user:IUser):IUserFull {
+    return Object.assign(user, { profiles: [] });
+  }
+
   public getProfile(restaurantId:number):IUserProfile | undefined {
     const userProfile:IUserProfile | undefined = this._user.profiles.find(profile => profile.restaurant && profile.restaurant.id === restaurantId);
     const user:IUser = {...this.getInfo()} as IUser;

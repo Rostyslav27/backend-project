@@ -119,7 +119,7 @@ export class RestaurantService {
           '$profiles.id$' : id
         },
         include: [{ 
-          association: ProfileUserUser,
+          association: RestaurantUserProfile,
           as: 'profiles',
           required: true,
           where: { id },
