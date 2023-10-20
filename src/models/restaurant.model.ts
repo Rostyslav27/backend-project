@@ -19,6 +19,17 @@ export class Restaurant {
     return this._restaurant;
   }
 
+  public sync():Promise<IRestaurantFull> {
+    return new Promise((resolve, reject) => {
+      restaurantService.getFullRestaurantById(this._restaurant.id).then((restaurantInfo) => {
+        this._restaurant = restaurantInfo;
+        resolve(this.getInfo());
+      }).catch(err => {
+        reject(err);
+      })
+    });
+  }
+
   public restaurantToFullRestaurant(restaurant:IRestaurant):IRestaurantFull {
     return Object.assign(restaurant, { rooms: [], clients: [], profiles: []}) satisfies IRestaurantFull
   }

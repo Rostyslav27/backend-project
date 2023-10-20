@@ -2,7 +2,7 @@
 require('dotenv').config(); 
 
 import { type Request, type Response } from 'express';
-import { Errors } from '../types';
+import { Errors, IClient, IClientFull } from '../types';
 import { reservationService } from './../services/reservation.service';
 import { clientService } from './../services/client.service';
 import { tableService } from './../services/table.service';
@@ -54,6 +54,7 @@ class TablesController {
     const clientPhone:string = String(req.body.clientPhone || '');
     const clientEmail:string = String(req.body.clientEmail || '');
     let clientId:number | null = req.body.clientId === null ? null : +req.body.clientId;
+    let client:IClientFull | undefined = undefined;
 
     if (+endTime < +startTime) {
       res.status(400).json(Errors.WrongData);
@@ -68,6 +69,7 @@ class TablesController {
           phone: clientPhone,
         }, restaurant.getId()).then((clientInfo) => {
           clientId = clientInfo.id;
+          client = clientInfo;
         }));
       } else if (clientId === 0) {
         clientId = null;
@@ -75,7 +77,7 @@ class TablesController {
 
       Promise.all(promiseList).then(() => {
         reservationService.createReservation({ startTime, endTime, people }, tableId, clientId).then((reservationInfo) => {
-          res.json(reservationInfo);
+          res.json(Object.assign(reservationInfo, { client: clientId ? client : undefined }));
         }).catch(err => {
           res.status(400).json(Errors.InvalidRequest);
         });
