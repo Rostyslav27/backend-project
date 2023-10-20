@@ -58,7 +58,7 @@ export const restaurantFields = {
     allowNull: true,
   },
   reservationDuration: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.INTEGER.UNSIGNED,
     allowNull: true,
   },
   document: {
