@@ -201,14 +201,28 @@ export class RestaurantService {
 
   public createRestaurant(restaurant:IRestaurantRaw):Promise<IRestaurantFull> {
     return new Promise<IRestaurantFull>((resolve, reject) => {
-      database.models.restaurant.create<Model<IRestaurantRaw>>({
-        name: restaurant.name
-      }).then((restaurant) => {
+      delete restaurant.id;
+      database.models.restaurant.create<Model<IRestaurantRaw>>(restaurant).then((restaurant) => {
         if (restaurant) {
           const rawRestaurant:IRestaurant = restaurant.toJSON() as IRestaurant;
           resolve(Object.assign(rawRestaurant, { rooms: [], clients: [], profiles: [] }) satisfies IRestaurantFull);
         } else { 
           reject('Restaurant was not created')
+        }
+      }).catch(err => {
+        reject(err);
+      });
+    });
+  }
+
+  public editRestaurant(restaurantId:number, restaurant:IRestaurantRaw):Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      delete restaurant.id;
+      database.models.restaurant.update<Model<IRestaurantRaw>>(restaurant, { where: { id: restaurantId } }).then((count) => {
+        if (count[0] > 0) {
+          resolve();
+        } else {
+          reject('Restaurant was not updated');
         }
       }).catch(err => {
         reject(err);

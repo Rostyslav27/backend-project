@@ -1,6 +1,6 @@
 import { userService } from './../services/user.service';
 import { restaurantService } from './../services/restaurant.service';
-import { type IRestaurant, type IReservation, RestaurantRole, type IRoomRaw, type IRoom, IRestaurantFull, IUserProfile, IUserProfileRaw } from './../types';
+import { type IRestaurant, type IReservation, RestaurantRole, type IRoomRaw, type IRoom, IRestaurantFull, IUserProfile, IUserProfileRaw, IRestaurantRaw } from './../types';
 import { roomService } from './../services/room.service';
 require('dotenv').config();
 
@@ -49,6 +49,21 @@ export class Restaurant {
 
   public hasTable(tableId:number):boolean {
     return this._restaurant.rooms.some(room => room.tables.some(table => table.id === tableId));
+  }
+
+  public edit(restaurant:IRestaurantRaw):Promise<IRestaurant> {
+    return new Promise<IRestaurant>((resolve, reject) => {
+      restaurantService.editRestaurant(this._restaurant.id, restaurant).then(() => {
+        restaurantService.getRestaurantById(this._restaurant.id).then((restaurantInfo) => {
+          this._restaurant = this.restaurantToFullRestaurant(restaurantInfo);
+          resolve(this.getInfo());
+        }).catch(err => {
+          reject(err);
+        });
+      }).catch(err => {
+        reject(err);
+      });
+    });
   }
 
   public setOrganization(organizationId:number):Promise<void> {

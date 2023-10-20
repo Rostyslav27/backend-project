@@ -26,6 +26,14 @@ router.get('/:id',
   tryTo(restaurantsController.getRestaurant, 'restaurantsController.getRestaurant')
 );
 
+router.put('/:id',
+  validateBody(['reservationDuration']).optional().isNumeric(),
+  checkValidation,
+  permissionMiddleware([]),
+  restaurantPermissionMiddleware([]),
+  tryTo(restaurantsController.editRestaurant, 'restaurantsController.editRestaurant')
+);
+
 router.get('/:id/reservations',
   permissionMiddleware([]),
   restaurantPermissionMiddleware([]),
