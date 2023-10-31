@@ -54,6 +54,7 @@ class OrganizationsController {
         organization.setOwner(user.getId()),
         restaurant.setOrganization(restaurant.getId()),
         restaurant.addProfile(user.getId(), { role: RestaurantRole.Owner }),
+        restaurant.addRoom({ name: 'Room' })
       ]).then(() => {
         organizationService.getFullOrganizationById(organization.getId()).then(organization => {
           res.json(organization);
