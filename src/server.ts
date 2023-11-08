@@ -10,7 +10,7 @@ const main = async ():Promise<void> => {
   try {
     const app = express();
 
-    database.sync({alter: true});
+    // database.sync({alter: true});
 
     if (process.env.IMG_DIR && !fs.existsSync(process.env.IMG_DIR)){
       fs.mkdirSync(process.env.IMG_DIR, { recursive: true, mode: 0o777 });

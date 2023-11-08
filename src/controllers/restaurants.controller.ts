@@ -29,19 +29,19 @@ class RestaurantsController {
     const restaurantInfo = restaurant.getInfo();
 
     restaurant.edit({
-      name: restaurantInfo.name || name,
-      img: restaurantInfo.img || img,
-      type: restaurantInfo.type || type, 
-      country: restaurantInfo.country || country,
-      city: restaurantInfo.city || city,
-      address: restaurantInfo.address || address,
-      phone: restaurantInfo.phone || phone,
-      email: restaurantInfo.email || email,
-      tax: restaurantInfo.tax || tax,
-      website: restaurantInfo.website || website,
-      description: restaurantInfo.description || description,
-      reservationDuration: restaurantInfo.reservationDuration || reservationDuration,
-      document: restaurantInfo.document || document,
+      name: name || restaurantInfo.name,
+      img: img || restaurantInfo.img,
+      type: type || restaurantInfo.type, 
+      country: country || restaurantInfo.country,
+      city: city || restaurantInfo.city,
+      address: address || restaurantInfo.address,
+      phone: phone || restaurantInfo.phone,
+      email: email || restaurantInfo.email,
+      tax: tax || restaurantInfo.tax,
+      website: website || restaurantInfo.website,
+      description: description || restaurantInfo.description,
+      reservationDuration: reservationDuration || restaurantInfo.reservationDuration,
+      document: document || restaurantInfo.document,
     }).then((restaurantInfo) => {
       res.json(restaurantInfo);
     }).catch(err => {
